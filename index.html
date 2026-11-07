@@ -10,47 +10,47 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0e5a43">
 <style>
-  /* 世界観：茶餐廳のメニュー板と街の看板。借りるのは 書体（明朝の大字）・配色（翡翠緑／朱／生成り）・密度・
-     シグネチャー（エリア一覧を路線図に） だけで、操作部品は標準のまま。 */
+  /* 世界観：茶餐廳。借りるのは 書体（明朝の大字）・配色（翡翠緑の看板／ミントの壁タイル／朱）・
+     メニュー板の漢字タイル・路線図・朱の印 だけ。操作部品は標準のまま。 */
   .viz-root {
     color-scheme: light;
-    --ground:     #f2ede2;  /* 生成りの紙 */
-    --surface:    #fbf8f1;
-    --ink:        #1d1b16;
-    --ink-2:      #4f4a3f;
-    --ink-3:      #686253;
-    --hairline:   #e2dbcb;
-    --line:       rgba(29,27,22,0.12);
-    --jade:       #0e5a43;  /* 看板の緑 */
+    --ground:     #e9efea;  /* 茶餐廳の壁タイル（淡いミントグレー） */
+    --surface:    #f8faf7;
+    --ink:        #18201b;
+    --ink-2:      #47524b;
+    --ink-3:      #5d6a62;
+    --hairline:   #d9e1db;
+    --line:       rgba(24,32,27,0.13);
+    --jade:       #0e5a43;
     --jade-ink:   #0e5a43;
-    --plate-ink:  #f6f1e4;
-    --plate-ink-2:#bcd6c9;
-    --vermilion:  #c23a22;  /* 朱 */
-    --good:       #1f6f3a;
-    --star:       #c48a00;
+    --plate-ink:  #f3f6f1;
+    --plate-ink-2:#b9d5c8;
+    --vermilion:  #c23a22;
+    --star:       #9a6c00;
     --sel:        rgba(14,90,67,0.20);
-    /* カテゴリ色（白抜きの大字が読める濃さにそろえる・両テーマ共通） */
-    --series-1: #c23a22; --series-2: #b8541c; --series-3: #9a6a00; --series-4: #7d4526;
-    --series-5: #4a3aa7; --series-6: #b23f72; --series-7: #12795a; --series-8: #8a6030;
-    --series-9: #2463ad; --series-10: #2f6f1f; --series-11: #6f6a5c;
+    --shadow:     0 -1px 0 rgba(24,32,27,0.08), 0 -6px 18px rgba(24,32,27,0.06);
+    /* カテゴリ色（白抜きの大字が読める濃さ・両テーマ共通） */
+    --series-1: #c23a22; --series-2: #b8541c; --series-3: #8f6300; --series-4: #7d4526;
+    --series-5: #4a3aa7; --series-6: #b23f72; --series-7: #12795a; --series-8: #84592b;
+    --series-9: #2463ad; --series-10: #2f6f1f; --series-11: #66705f;
   }
   :root[data-theme="dark"] .viz-root {
     color-scheme: dark;
-    --ground:     #13120f;
-    --surface:    #1c1a16;
-    --ink:        #f1ece1;
-    --ink-2:      #c9c2b2;
-    --ink-3:      #a19a89;
-    --hairline:   #2e2b25;
-    --line:       rgba(241,236,225,0.12);
+    --ground:     #101512;
+    --surface:    #18201b;
+    --ink:        #edf2ee;
+    --ink-2:      #c3cec7;
+    --ink-3:      #9aa89f;
+    --hairline:   #26302a;
+    --line:       rgba(237,242,238,0.13);
     --jade:       #0b3b2d;
     --jade-ink:   #5fbf98;
-    --plate-ink:  #f1ece1;
+    --plate-ink:  #edf2ee;
     --plate-ink-2:#9fc4b3;
-    --vermilion:  #e8664d;
-    --good:       #4cb36d;
+    --vermilion:  #ec6d53;
     --star:       #f0b429;
     --sel:        rgba(95,191,152,0.28);
+    --shadow:     0 -1px 0 rgba(0,0,0,0.5);
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { margin: 0; padding: 0; }
@@ -62,145 +62,193 @@
   }
   ::selection { background: var(--sel); color: var(--ink); }
   :focus-visible { outline: 2px solid var(--vermilion); outline-offset: 2px; border-radius: 6px; }
+  button { font: inherit; color: inherit; }
   .serif { font-family: "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", "Noto Serif JP", serif; }
+  .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
   /* ---- 看板（ヘッダー） ---- */
-  .plate { background: var(--jade); color: var(--plate-ink); padding: calc(18px + env(safe-area-inset-top)) 0 16px; }
-  .plate-in { max-width: 760px; margin: 0 auto; padding: 0 16px; display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; align-items: end; }
-  .plate h1 { margin: 0; font-size: 40px; line-height: 1; font-weight: 600; letter-spacing: 0.02em; }
-  .plate h1 .en { display: block; font-family: -apple-system, "Segoe UI", system-ui, sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.08em; margin-top: 8px; color: var(--plate-ink-2); }
-  .tally { grid-column: 1 / -1; margin: 12px 0 0; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.18); display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: 13px; color: var(--plate-ink-2); }
-  .tally b { color: var(--plate-ink); font-size: 17px; font-weight: 700; margin-right: 3px; }
+  .plate { background: var(--jade); color: var(--plate-ink); padding: calc(14px + env(safe-area-inset-top)) 0 12px; }
+  .plate-in { max-width: 760px; margin: 0 auto; padding: 0 16px; display: grid; grid-template-columns: auto 1fr auto; gap: 0 12px; align-items: center; }
+  .plate h1 { margin: 0; font-size: 34px; line-height: 1; font-weight: 600; letter-spacing: 0.02em; }
+  .tally { margin: 0; display: flex; flex-wrap: wrap; gap: 0 12px; font-size: 12px; color: var(--plate-ink-2); line-height: 1.6; }
+  .tally b { color: var(--plate-ink); font-size: 15px; font-weight: 700; margin: 0 2px; }
   .theme-toggle {
-    align-self: start; border: 1px solid rgba(255,255,255,0.35); background: transparent; color: var(--plate-ink);
-    border-radius: 999px; padding: 6px 12px; font: inherit; font-size: 12px; cursor: pointer; min-height: 32px;
+    border: 1px solid rgba(255,255,255,0.35); background: transparent; color: var(--plate-ink);
+    border-radius: 50%; padding: 0; width: 40px; height: 40px; cursor: pointer; display: grid; place-items: center;
   }
+  .theme-toggle svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linejoin: round; }
+  .theme-toggle[aria-pressed="true"] svg { fill: currentColor; }
   .theme-toggle:active { background: rgba(255,255,255,0.12); }
 
-  .wrap { max-width: 760px; margin: 0 auto; padding: 0 14px calc(48px + env(safe-area-inset-bottom)); }
-
-  /* ---- タブ ---- */
-  .page-tabs { display: flex; position: sticky; top: 0; z-index: 5; background: var(--ground); border-bottom: 1px solid var(--line); margin: 0 -14px 16px; padding: 0 14px; }
-  .page-tab { flex: 1; background: none; border: none; border-bottom: 3px solid transparent; padding: 13px 4px 11px; font: inherit; font-size: 14px; font-weight: 600; color: var(--ink-3); cursor: pointer; }
-  .page-tab.active { color: var(--ink); border-bottom-color: var(--vermilion); }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 14px calc(96px + env(safe-area-inset-bottom)); }
   .page { display: none; }
   .page.active { display: block; }
 
-  /* ---- 検索・絞り込み ---- */
+  /* ---- 下のタブバー（親指で届く位置） ---- */
+  .tabbar {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; display: flex; justify-content: center;
+    background: var(--surface); box-shadow: var(--shadow); padding-bottom: env(safe-area-inset-bottom);
+  }
+  .tabbar-in { display: flex; width: 100%; max-width: 760px; }
+  .tab { flex: 1; background: none; border: none; padding: 8px 4px 10px; min-height: 56px; cursor: pointer; color: var(--ink-3); display: grid; justify-items: center; gap: 2px; font-size: 11.5px; font-weight: 600; }
+  .tab svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .tab[aria-selected="true"] { color: var(--vermilion); }
+
+  /* ---- 検索と絞り込み（上に貼り付く1段だけ） ---- */
+  .toolbar { position: sticky; top: 0; z-index: 10; background: var(--ground); margin: 0 -14px; padding: 10px 14px 8px; }
+  .toolbar-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
   .search {
-    width: 100%; padding: 11px 14px; font: inherit; font-size: 16px; border-radius: 12px;
-    border: 1px solid var(--line); background: var(--surface); color: var(--ink); margin-bottom: 14px;
+    width: 100%; padding: 10px 14px; font: inherit; font-size: 16px; border-radius: 12px; min-height: 44px;
+    border: 1px solid var(--line); background: var(--surface); color: var(--ink);
   }
   .search::placeholder { color: var(--ink-3); }
-  .filter-row { display: grid; grid-template-columns: 4.2em minmax(0, 1fr); align-items: center; gap: 8px; margin-bottom: 8px; }
-  .filter-row > span { font-size: 12px; font-weight: 600; color: var(--ink-3); }
-  .chips { display: flex; gap: 6px; overflow-x: auto; padding: 2px 0 4px; scrollbar-width: none; }
-  .chips::-webkit-scrollbar { display: none; }
+  .filter-btn {
+    min-height: 44px; padding: 0 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface);
+    font-weight: 600; font-size: 14px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+  }
+  .filter-btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
+  .filter-btn .n { background: var(--vermilion); color: #fff; border-radius: 999px; min-width: 20px; height: 20px; font-size: 12px; display: inline-grid; place-items: center; padding: 0 6px; }
+  .filter-btn .n[hidden] { display: none; }
+  .active-filters { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  .active-filters:empty { display: none; }
+
   .chip {
-    display: inline-flex; align-items: center; gap: 6px; flex: none; min-height: 34px;
+    display: inline-flex; align-items: center; gap: 6px; min-height: 40px;
     border: 1px solid var(--line); background: var(--surface); color: var(--ink-2);
-    border-radius: 999px; padding: 6px 12px; font-size: 13px; cursor: pointer; user-select: none; white-space: nowrap;
+    border-radius: 999px; padding: 6px 13px; font-size: 14px; cursor: pointer; white-space: nowrap;
     transition: background-color .15s ease-out, color .15s ease-out;
   }
-  .chip .sw { width: 8px; height: 8px; border-radius: 2px; flex: none; }
-  .chip small { color: var(--ink-3); font-size: 11.5px; }
-  .chip.active { background: var(--ink); color: var(--ground); border-color: var(--ink); font-weight: 600; }
-  .chip.active small { color: inherit; opacity: .7; }
-  .toggles { display: flex; gap: 6px; margin: 4px 0 18px; padding-left: calc(4.2em + 8px); }
+  .chip .sw { width: 9px; height: 9px; border-radius: 2px; flex: none; }
+  .chip small { color: var(--ink-3); font-size: 12px; }
+  .chip[aria-pressed="true"] { background: var(--ink); color: var(--ground); border-color: var(--ink); font-weight: 600; }
+  .chip[aria-pressed="true"] small { color: inherit; opacity: .7; }
+  .chip.removable { min-height: 34px; background: var(--ink); color: var(--ground); border-color: var(--ink); font-size: 13px; font-weight: 600; }
+  .chip.removable::after { content: "×"; font-weight: 400; margin-left: 2px; }
+  .chip.clear { min-height: 34px; background: none; border-style: dashed; font-size: 13px; }
+
+  /* ---- 絞り込みシート ---- */
+  dialog.sheet {
+    margin: auto 0 0; width: 100%; max-width: 100%; max-height: 82dvh; border: none; padding: 8px 16px 16px;
+    border-radius: 18px 18px 0 0; background: var(--surface); color: var(--ink);
+  }
+  dialog.sheet::backdrop { background: rgba(10,16,12,0.45); }
+  dialog.sheet[open] { animation: sheet-in .24s cubic-bezier(.16,1,.3,1); }
+  @keyframes sheet-in { from { transform: translateY(48px); } }
+  .sheet-in { max-width: 760px; margin: 0 auto; padding-bottom: env(safe-area-inset-bottom); }
+  .sheet-grab { width: 40px; height: 5px; border-radius: 3px; background: var(--hairline); margin: 0 auto 10px; }
+  .sheet h3 { font-size: 13px; color: var(--ink-3); margin: 14px 0 8px; font-weight: 600; }
+  .sheet .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .sheet-foot { display: grid; grid-template-columns: auto 1fr; gap: 8px; margin-top: 18px; position: sticky; bottom: 0; background: var(--surface); padding-top: 8px; }
 
   /* ---- 見出し ---- */
-  section.panel { margin-bottom: 26px; }
+  section.panel { margin: 14px 0 26px; }
   .panel h2 { font-size: 17px; margin: 0 0 8px; display: flex; align-items: baseline; gap: 8px; text-wrap: balance; }
   .panel h2 small { font-size: 12.5px; color: var(--ink-3); font-weight: 500; }
+  .panel h2 .up { margin-left: auto; font-size: 12.5px; font-weight: 600; color: var(--jade-ink); background: none; border: none; padding: 6px 0; cursor: pointer; }
 
-  /* ---- 一覧（1枚の面に行を並べる） ---- */
+  /* ---- 一覧：メニュー板のように、漢字タイルと店名を並べる ---- */
   .list { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
   .card + .card { border-top: 1px solid var(--hairline); }
-  .card-main { display: flex; align-items: center; gap: 10px; padding: 10px 6px 10px 4px; cursor: pointer; }
+  .card-main { display: flex; align-items: center; padding: 0 4px 0 0; }
+  .row-hit { flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; padding: 11px 6px 11px 12px; background: none; border: none; text-align: left; cursor: pointer; }
+  .card.open .card-main { background: color-mix(in srgb, var(--ground) 50%, var(--surface)); }
+  .tile {
+    position: relative; width: 50px; height: 50px; flex: none; border-radius: 6px; background: var(--cat); color: #fff;
+    display: grid; place-items: center; font-size: 25px; font-weight: 600; line-height: 1;
+    box-shadow: inset 0 0 0 3px var(--cat), inset 0 0 0 4px rgba(255,255,255,0.45);
+  }
+  .seal {
+    position: absolute; right: -7px; bottom: -7px; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--surface); color: var(--vermilion); border: 2px solid var(--vermilion);
+    display: grid; place-items: center; font-size: 13px; font-weight: 700; transform: rotate(-12deg);
+  }
+  .seal.stamp { animation: stamp .26s cubic-bezier(.16,1,.3,1); }
+  @keyframes stamp { from { transform: rotate(-12deg) scale(1.7); opacity: 0; } }
   .card-body { flex: 1; min-width: 0; }
   .card-title { font-size: 15.5px; font-weight: 600; line-height: 1.3; word-break: break-word; }
-  .card.visited .card-title { color: var(--ink-3); text-decoration: line-through; text-decoration-thickness: 1px; }
-  .card.visited .thumb { opacity: .45; }
-  .thumb { width: 56px; height: 56px; border-radius: 8px; object-fit: cover; flex: none; background: var(--hairline); }
-  .thumb.tile { display: flex; align-items: center; justify-content: center; background: var(--cat); color: #fff; font-size: 27px; font-weight: 600; }
   .sig { font-size: 13px; color: var(--ink-2); margin-top: 2px; line-height: 1.4; }
-  .meta { font-size: 12px; color: var(--ink-3); margin-top: 4px; display: flex; gap: 4px 10px; flex-wrap: wrap; align-items: center; }
+  .meta { font-size: 12px; color: var(--ink-3); margin-top: 4px; display: flex; gap: 2px 10px; flex-wrap: wrap; align-items: center; }
   .meta .cat { display: inline-flex; align-items: center; gap: 5px; color: var(--ink-2); }
   .meta .cat::before { content: ""; width: 8px; height: 8px; border-radius: 2px; background: var(--cat); }
   .meta .day { color: var(--vermilion); font-weight: 700; }
+  .meta .went { color: var(--vermilion); font-weight: 700; }
   .meta .memo { color: var(--ink-2); }
-  .icon-btn { border: none; background: none; padding: 0; width: 40px; height: 44px; display: grid; place-items: center; cursor: pointer; flex: none; color: var(--ink-3); }
-  .icon-btn svg { width: 23px; height: 23px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linejoin: round; stroke-linecap: round; transition: fill .15s ease-out, color .15s ease-out; }
-  .icon-btn.star.on { color: var(--star); }
-  .icon-btn.star.on svg { fill: currentColor; }
-  .icon-btn.check.on { color: var(--good); }
-  .icon-btn.check.on svg circle { fill: currentColor; }
-  .icon-btn.check.on svg path { stroke: #fff; }
+  .chev { width: 16px; height: 16px; flex: none; fill: none; stroke: var(--ink-3); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: transform .2s ease-out; }
+  .card.open .chev { transform: rotate(90deg); }
+  .icon-btn { border: none; background: none; padding: 0; width: 44px; height: 48px; display: grid; place-items: center; cursor: pointer; flex: none; color: var(--ink-3); }
+  .icon-btn svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; transition: fill .15s ease-out, color .15s ease-out; }
+  .icon-btn.star[aria-pressed="true"] { color: var(--star); }
+  .icon-btn.star[aria-pressed="true"] svg { fill: currentColor; }
+  .icon-btn.went[aria-pressed="true"] { color: var(--vermilion); }
+  .icon-btn.went[aria-pressed="true"] svg circle { fill: currentColor; }
+  .icon-btn.went[aria-pressed="true"] svg path { stroke: #fff; }
 
-  .card-detail { display: none; padding: 2px 14px 16px; }
+  /* ---- 開いたとき：地図 → 日程 → メモ → (情報を直す) ---- */
+  .card-detail { display: none; padding: 4px 14px 16px; }
   .card.open .card-detail { display: block; }
-  .card.open .card-main { background: color-mix(in srgb, var(--ground) 55%, var(--surface)); }
-  .photo-big { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 10px; margin-top: 12px; display: block; background: var(--hairline); }
-  .credit { font-size: 11px; color: var(--ink-3); margin-top: 5px; line-height: 1.45; }
-  .credit a { color: inherit; text-underline-offset: 2px; }
-  .pitch { font-size: 14px; line-height: 1.7; margin-top: 12px; max-width: 38em; text-wrap: pretty; }
-  .pitch b { color: var(--jade-ink); }
-  .field { display: grid; grid-template-columns: 4.2em 1fr; align-items: center; gap: 8px; margin-top: 10px; font-size: 13px; color: var(--ink-2); }
-  .field select, .field input {
-    width: 100%; padding: 8px 10px; font: inherit; font-size: 16px; border-radius: 9px; min-height: 40px;
+  .pitch { font-size: 14px; line-height: 1.7; margin: 4px 0 0; max-width: 38em; text-wrap: pretty; color: var(--ink-2); }
+  .btn { display: flex; align-items: center; justify-content: center; gap: 6px; text-align: center; min-height: 46px; padding: 8px 10px; border-radius: 11px; font-weight: 600; font-size: 14px; line-height: 1.3; text-decoration: none; cursor: pointer; border: 1px solid transparent; }
+  .btn.primary { background: var(--vermilion); color: #fff; margin-top: 12px; }
+  .btn.ghost { border-color: var(--line); color: var(--ink); background: var(--surface); font-size: 13px; min-height: 42px; }
+  .btn:active { filter: brightness(.94); }
+  .sub-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+  .map-frame { width: 100%; height: 220px; border: 1px solid var(--line); border-radius: 10px; margin-top: 10px; display: block; }
+  .label { font-size: 12.5px; font-weight: 600; color: var(--ink-3); margin: 16px 0 6px; display: block; }
+  .seg { display: grid; grid-template-columns: repeat(6, 1fr); border: 1px solid var(--line); border-radius: 11px; overflow: hidden; background: var(--ground); }
+  .seg button { min-height: 42px; border: none; background: none; font-size: 13px; font-weight: 600; color: var(--ink-2); cursor: pointer; padding: 0; }
+  .seg button + button { border-left: 1px solid var(--line); }
+  .seg button[aria-pressed="true"] { background: var(--vermilion); color: #fff; }
+  .memo-in, .fix select {
+    width: 100%; padding: 9px 12px; font: inherit; font-size: 16px; border-radius: 10px; min-height: 44px;
     border: 1px solid var(--line); background: var(--ground); color: var(--ink);
   }
-  .map-frame { width: 100%; height: 220px; border: 1px solid var(--line); border-radius: 10px; margin-top: 14px; display: block; }
-  .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
-  .btn { display: flex; align-items: center; justify-content: center; text-align: center; min-height: 44px; padding: 8px 10px; border-radius: 10px; font-weight: 600; font-size: 13.5px; line-height: 1.3; text-decoration: none; }
-  .btn.primary { background: var(--vermilion); color: #fff; }
-  .btn.ghost { border: 1px solid var(--line); color: var(--ink); background: var(--surface); }
-  .btn:active { filter: brightness(.94); }
+  details.fix { margin-top: 14px; border-top: 1px dashed var(--line); padding-top: 4px; }
+  details.fix summary { cursor: pointer; font-size: 13px; color: var(--ink-2); padding: 8px 0; list-style-position: inside; }
+  .fix-grid { display: grid; grid-template-columns: 4.5em 1fr; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-2); }
+  .fix .link-btn { margin-top: 6px; }
   .empty { color: var(--ink-3); font-size: 13.5px; padding: 22px 16px; text-align: center; }
+  .empty .chip { margin-top: 10px; }
 
   /* ---- シグネチャー：エリアを路線図の駅として並べる ---- */
-  .route { list-style: none; margin: 0 0 28px; padding: 4px 0; position: relative; }
-  .route::before { content: ""; position: absolute; left: 13px; top: 22px; bottom: 22px; width: 6px; border-radius: 3px; background: var(--jade-ink); }
-  .stop { position: relative; display: grid; grid-template-columns: 32px 1fr auto; align-items: center; gap: 10px; padding: 9px 4px 9px 0; cursor: pointer; }
-  .stop .dot { width: 22px; height: 22px; margin-left: 5px; border-radius: 50%; background: var(--ground); border: 5px solid var(--jade-ink); z-index: 1; }
+  .route { list-style: none; margin: 16px 0 28px; padding: 4px 0; position: relative; }
+  .route::before { content: ""; position: absolute; left: 13px; top: 26px; bottom: 26px; width: 6px; border-radius: 3px; background: var(--jade-ink); }
+  .stop button { width: 100%; display: grid; grid-template-columns: 32px 1fr auto; align-items: center; gap: 10px; padding: 10px 4px 10px 0; background: none; border: none; text-align: left; cursor: pointer; min-height: 48px; }
+  .stop .dot { width: 22px; height: 22px; margin-left: 5px; border-radius: 50%; background: var(--ground); border: 5px solid var(--jade-ink); position: relative; z-index: 1; }
   .stop.done .dot { background: var(--jade-ink); }
   .stop .nm { font-size: 17px; font-weight: 600; }
   .stop .ct { font-size: 12.5px; color: var(--ink-3); text-align: right; white-space: nowrap; }
   .stop .ct b { color: var(--ink); font-size: 15px; }
 
+  .hint { font-size: 13px; color: var(--ink-2); margin: 16px 0 6px; line-height: 1.6; }
   .day-empty { margin: -2px 0 0; padding: 0 0 12px; border-bottom: 1px dashed var(--line); font-size: 13px; color: var(--ink-3); }
   #planBody section.panel:has(.day-empty) { margin-bottom: 14px; }
-  .hint { font-size: 13px; color: var(--ink-2); margin: 0 0 18px; line-height: 1.6; }
   .colophon { border-top: 1px solid var(--line); margin-top: 30px; padding-top: 14px; font-size: 12px; color: var(--ink-3); line-height: 1.75; max-width: 40em; }
   .colophon p { margin: 0 0 6px; }
-  .link-btn { background: none; border: none; color: var(--vermilion); font: inherit; font-size: 12px; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; padding: 6px 0; }
-  @media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+  .link-btn { background: none; border: none; color: var(--jade-ink); font-size: 12.5px; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; padding: 8px 0; margin-right: 14px; }
+  .link-btn.danger { color: var(--vermilion); }
+  @media (prefers-reduced-motion: reduce) { *, *::before { transition: none !important; animation: none !important; scroll-behavior: auto !important; } }
 </style>
 </head>
 <body class="viz-root">
 <header class="plate">
   <div class="plate-in">
-    <h1 class="serif">香港<span class="en">HONG KONG SPOTS</span></h1>
-    <button class="theme-toggle" id="themeToggle">ダーク</button>
-    <p class="tally" id="tally"></p>
+    <h1 class="serif">香港<span class="vh"> Hong Kong Spots</span></h1>
+    <p class="tally" id="tally" aria-live="polite"></p>
+    <button class="theme-toggle" id="themeToggle" aria-pressed="false" aria-label="ダーク表示" title="ダーク表示"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.5 14.5A8 8 0 0 1 9.5 4.5a8 8 0 1 0 10 10z"/></svg></button>
   </div>
 </header>
 <div class="wrap">
 
-<nav class="page-tabs" id="pageTabs">
-  <button class="page-tab active" data-page="list">一覧</button>
-  <button class="page-tab" data-page="area">エリア別</button>
-  <button class="page-tab" data-page="plan">日別プラン</button>
-</nav>
-
 <!-- 一覧 -->
-<div class="page active" id="page-list">
-  <input class="search" id="search" type="search" placeholder="店名・料理名で検索">
-  <div class="filter-row"><span>カテゴリ</span><div class="chips" id="catChips"></div></div>
-  <div class="filter-row"><span>エリア</span><div class="chips" id="areaChips"></div></div>
-  <div class="toggles">
-    <span class="chip" id="fStar" role="button" tabindex="0">★だけ</span>
-    <span class="chip" id="fUnvisited" role="button" tabindex="0">まだ行ってない</span>
+<div class="page active" id="page-list" role="tabpanel" aria-labelledby="tab-list">
+  <div class="toolbar">
+    <div class="toolbar-row">
+      <input class="search" id="search" type="search" placeholder="店名・料理・エリアで検索" aria-label="検索">
+      <button class="filter-btn" id="openFilter" aria-haspopup="dialog">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg>絞り込み<span class="n" id="filterN" hidden></span>
+      </button>
+    </div>
+    <div class="active-filters" id="activeFilters"></div>
   </div>
   <section class="panel">
     <h2>スポット <small id="listCount"></small></h2>
@@ -209,24 +257,51 @@
 </div>
 
 <!-- エリア別 -->
-<div class="page" id="page-area">
-  <ol class="route" id="areaGrid"></ol>
+<div class="page" id="page-area" role="tabpanel" aria-labelledby="tab-area">
+  <ol class="route" id="route" aria-label="エリア"></ol>
   <div id="areaBody"></div>
 </div>
 
 <!-- 日別プラン -->
-<div class="page" id="page-plan">
-  <p class="hint">スポットを開いて「日程」を選ぶと、ここに日ごとにまとまります。</p>
+<div class="page" id="page-plan" role="tabpanel" aria-labelledby="tab-plan">
+  <p class="hint">スポットを開いて「日程」のボタンを押すと、ここに日ごとにまとまります。</p>
   <div id="planBody"></div>
 </div>
 
 <footer class="colophon">
   <p>Googleマップ「デフォルト リスト」のうち、タグが Hong Kong の<span id="noteCount"></span>件（書き出し日 <span id="noteDate"></span>）。</p>
-  <p>名物・紹介文・カテゴリ・エリアはWeb上の情報をもとにまとめたもので、「（推定）」は確認できなかった店です。違っていたらスポットを開いて直せます。</p>
-  <p>写真はWikimedia Commonsの自由ライセンス画像です。その店の写真がないときは、料理のイメージ写真を出しています。</p>
-  <p>★・行った・日程・メモ・修正内容は、この端末のブラウザに保存されます。<br><button class="link-btn" id="resetBtn">保存内容をすべてリセット</button></p>
+  <p>名物・紹介文・カテゴリ・エリアはWeb上の情報をもとにまとめたもので、「（推定）」は確認できなかった店です。違っていたらスポットを開いて「情報を直す」から直せます。店の様子は「店の写真を見る」でGoogleの画像検索を開けます。</p>
+  <p>★・行った・日程・メモ・修正内容は、この端末のブラウザに保存されます。機種変更の前などは「保存内容をコピー」で控えを取っておけます。</p>
+  <p><button class="link-btn" id="exportBtn">保存内容をコピー</button><button class="link-btn" id="importBtn">控えから戻す</button><button class="link-btn danger" id="resetBtn">すべてリセット</button></p>
 </footer>
 </div>
+
+<nav class="tabbar" aria-label="表示の切り替え">
+  <div class="tabbar-in" role="tablist">
+    <button class="tab" role="tab" id="tab-list" data-page="list" aria-selected="true" aria-controls="page-list">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></svg>一覧</button>
+    <button class="tab" role="tab" id="tab-area" data-page="area" aria-selected="false" aria-controls="page-area">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v18"/><circle cx="7" cy="6" r="2.4"/><circle cx="7" cy="18" r="2.4"/><path d="M12 6h8M12 18h8M12 12h5"/></svg>エリア別</button>
+    <button class="tab" role="tab" id="tab-plan" data-page="plan" aria-selected="false" aria-controls="page-plan">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>日別プラン</button>
+  </div>
+</nav>
+
+<dialog class="sheet" id="filterSheet" aria-label="絞り込み">
+  <div class="sheet-in">
+    <div class="sheet-grab"></div>
+    <h3>しぼる</h3>
+    <div class="chips" id="flagChips"></div>
+    <h3>カテゴリ</h3>
+    <div class="chips" id="catChips"></div>
+    <h3>エリア</h3>
+    <div class="chips" id="areaChips"></div>
+    <div class="sheet-foot">
+      <button class="btn ghost" id="clearFilter">解除</button>
+      <button class="btn primary" id="closeFilter" style="margin-top:0" autofocus>結果を見る</button>
+    </div>
+  </div>
+</dialog>
 
 <script>
 const SPOTS = [{"id":"0x340401bbf768e8cb:0x1ac567d1c93d0e8","title":"Red Tea (Tsim Sha Tsui)","url":"https://www.google.com/maps/place/Red+Tea+(Tsim+Sha+Tsui)/data=!4m2!3m1!1s0x340401bbf768e8cb:0x1ac567d1c93d0e8","category":"茶餐廳","area":"尖沙咀","memo":"","sig":"パイナップルパン＋ミルクティー","pitch":"観光客も行列する人気チェーン冰室。朝食セットやサテー牛肉麺も定番","photo":{"src":"img/332ed81104.jpg","store":true,"author":"Peachyeung316","license":"CC BY-SA 4.0","page":"https://commons.wikimedia.org/wiki/File:A_Breakfast_from_Red_Tea_Cafe.jpg"}},{"id":"0x340400c84f755fc7:0x8be84595d44d5dcf","title":"Kam Wah Cafe \u0026 Cake Shop","url":"https://www.google.com/maps/place/Kam+Wah+Cafe+%26+Cake+Shop/data=!4m2!3m1!1s0x340400c84f755fc7:0x8be84595d44d5dcf","category":"茶餐廳","area":"旺角・太子","memo":"","sig":"パイナップルパン＋バター","pitch":"太子の老舗冰廳。焼きたてサクサクの菠蘿油が香港屈指と評判","photo":{"src":"img/877ea29c63.jpg","store":false,"author":"Peachyeung316","license":"CC BY-SA 4.0","page":"https://commons.wikimedia.org/wiki/File:Pineapple_bun_with_butter_from_Kim_Kee_Cafe.jpg"}},{"id":"0x3404005cff77c1db:0xca6e501d80265ffc","title":"Liu Yuan Pavilion","url":"https://www.google.com/maps/place/Liu+Yuan+Pavilion/data=!4m2!3m1!1s0x3404005cff77c1db:0xca6e501d80265ffc","category":"レストラン","area":"湾仔・銅鑼湾","memo":"","sig":"酔っ払い鳩・獅子頭","pitch":"ミシュラン1つ星の上海料理。上海語が飛び交う本格派で予約必須","photo":{"src":"img/cb886173f2.jpg","store":false,"author":"Jpatokal","license":"CC BY-SA 4.0","page":"https://commons.wikimedia.org/wiki/File:Lions_head_meatballs_in_brown_sauce.jpg"}},{"id":"0x3404007b4e4fee6d:0x9b800a34de87ebd5","title":"Yat Lok Restaurant","url":"https://www.google.com/maps/place/Yat+Lok+Restaurant/data=!4m2!3m1!1s0x3404007b4e4fee6d:0x9b800a34de87ebd5","category":"焼味・煲仔飯","area":"中環・上環","memo":"","sig":"ロースト・グース（焼鵝）","pitch":"ミシュラン掲載の焼味店。皮パリ肉ジューシーな焼鵝とビーフン","photo":{"src":"img/cd32f7aeec.jpg","store":true,"author":"Sakaori (talk)","license":"CC BY 3.0","page":"https://commons.wikimedia.org/wiki/File:Roast_goose_in_yat_lok_restaurant.JPG"}},{"id":"0x3404074dbc7cbf83:0xf749675db573057f","title":"Kwan Kee Bamboo Noodle","url":"https://www.google.com/maps/place/Kwan+Kee+Bamboo+Noodle/data=!4m2!3m1!1s0x3404074dbc7cbf83:0xf749675db573057f","category":"麺・粥","area":"深水埗","memo":"","sig":"竹昇麺のエビワンタン麺","pitch":"ミシュラン・ビブグルマン。竹で打つ自家製麺、エビ卵まぶし麺も名物","photo":{"src":"img/8bea7e0d92.jpg","store":false,"author":"cattan2011","license":"CC BY 2.0","page":"https://commons.wikimedia.org/wiki/File:Wonton_noodle-_Sai_Yung_Kee,_Hong_Kong.jpg"}},{"id":"0x340400de1cf21503:0x3320c62bf29e827b","title":"Hung Hom Pancake","url":"https://www.google.com/maps/place/Hung+Hom+Pancake/data=!4m2!3m1!1s0x340400de1cf21503:0x3320c62bf29e827b","category":"スイーツ","area":"その他","memo":"","sig":"三色エッグワッフル","pitch":"ミシュラン掲載・40年以上続く街角店。注文後に焼く雞蛋仔","photo":{"src":"img/43125d6f45.jpg","store":false,"author":":ja:User:(WT-ja) Tatata","license":"CC BY-SA 4.0","page":"https://commons.wikimedia.org/wiki/File:HK_Gai-Daan-Jai.jpg"}},{"id":"0x340401eccf5f1ecd:0x82ee9ff7963d4451","title":"lulu BAOBAO 手工拉麵小籠包 [ Tai Kwun ]","url":"https://www.google.com/maps/place/lulu+BAOBAO+%E6%89%8B%E5%B7%A5%E6%8B%89%E9%BA%B5%E5%B0%8F%E7%B1%A0%E5%8C%85+%5B+Tai+Kwun+%5D/data=!4m2!3m1!1s0x340401eccf5f1ecd:0x82ee9ff7963d4451","category":"麺・粥","area":"中環・上環","memo":"","sig":"ネギ油拉麺・小籠包","pitch":"ミシュラン・ビブグルマン。手打ち拉麺と手包み点心の大館店","photo":{"src":"img/8055e90426.jpg","store":false,"author":"Darrylsnow","license":"CC BY-SA 4.0","page":"https://commons.wikimedia.org/wiki/File:Xiaolongbao-breakfast.jpg"}},{"id":"0x340400ea8d882a07:0x8f4fd724a4632a94","title":"Mrs. Fong Dessert","url":"https://www.google.com/maps/place/Mrs.+Fong+Dessert/data=!4m2!3m1!1s0x340400ea8d882a07:0x8f4fd724a4632a94","category":"スイーツ","area":"佐敦・油麻地","memo":"","sig":"黒ゴマロール（芝麻卷）","pitch":"ミシュラン掲載の家族経営店。手作り伝統菓子が10種以上並ぶ","photo":{"src":"img/8642f39187.jpg","store":false,"author":"Pizza Plus Pineapple","license":"CC BY-SA 4.0","page":"https://commons.wikimedia.org/wiki/File:Hong_Kong_street_food-Black_sesame_roll-%E8%8A%9D%E9%BA%BB%E5%8D%B7.jpg"}},{"id":"0x31da1148890d570d:0x7655cbccc67a74a0","title":"Eng Kee Noodle House 英記麵家","url":"https://www.google.com/maps/place/Eng+Kee+Noodle+House+%E8%8B%B1%E8%A8%98%E9%BA%B5%E5%AE%B6/data=!4m2!3m1!1s0x31da1148890d570d:0x7655cbccc67a74a0","category":"麺・粥","area":"その他","memo":"","sig":"ワンタン麺（雲呑麺）","pitch":"地図IDはシンガポールを示す。香港の同名店なら西營盤のビブグルマン","photo":{"src":"img/8bea7e0d92.jpg","store":false,"author":"cattan2011","license":"CC BY 2.0","page":"https://commons.wikimedia.org/wiki/File:Wonton_noodle-_Sai_Yung_Kee,_Hong_Kong.jpg"}},{"id":"0x340400eb8f3b2ec9:0xe251b19e280f4b2d","title":"Kam Shan Seafood Restaurant","url":"https://www.google.com/maps/place/Kam+Shan+Seafood+Restaurant/data=!4m2!3m1!1s0x340400eb8f3b2ec9:0xe251b19e280f4b2d","category":"レストラン","area":"佐敦・油麻地","memo":"","sig":"生簀海鮮のアサリ豆豉炒め","pitch":"地元客で賑わう大衆海鮮酒家。生簀から選ぶ海鮮が手頃な価格","photo":{"src":"img/9b93f72f9a.jpg","store":false,"author":"ZhengZhou","license":"CC BY-SA 4.0","page":"https://commons.wikimedia.org/wiki/File:Causeway_Bay_Typhoon_Shelter_Crab.jpg"}},{"id":"0x340401215120e3c1:0x44ed2cb751a6cefe","title":"泰和堂涼茶館","url":"https://www.google.com/maps/place/%E6%B3%B0%E5%92%8C%E5%A0%82%E6%B6%BC%E8%8C%B6%E9%A4%A8/data=!4m2!3m1!1s0x340401215120e3c1:0x44ed2cb751a6cefe","category":"スイーツ","area":"旺角・太子","memo":"","sig":"涼茶（症状別ハーブティー）","pitch":"創業1989年の涼茶館。症状に合わせて選ぶ涼茶と楊枝甘露","photo":{"src":"img/8d2acf6b0f.jpg","store":false,"author":"Peachyeung316","license":"CC BY-SA 4.0","page":"https://commons.wikimedia.org/wiki/File:Pak_Po_Tang_Chinese_Herbal_Tea_Shop_in_Jordan_Hong_Kong.jpg"}},{"id":"0x340401c754671f51:0x6a717de872b10021","title":"Ten Noodle Shop","url":"https://www.google.com/maps/place/Ten+Noodle+Shop/data=!4m2!3m1!1s0x340401c754671f51:0x6a717de872b10021","category":"麺・粥","area":"旺角・太子","memo":"","sig":"ワンタン麺","pitch":"三代続く百年レシピのワンタン麺店。手頃な価格で地元に人気","photo":{"src":"img/8bea7e0d92.jpg","store":false,"author":"cattan2011","license":"CC BY 2.0","page":"https://commons.wikimedia.org/wiki/File:Wonton_noodle-_Sai_Yung_Kee,_Hong_Kong.jpg"}},{"id":"0x3404007dd2ced109:0x5f8569e29a632622","title":"Paper Stone Bakery (富衛金融中心店)","url":"https://www.google.com/maps/place/Paper+Stone+Bakery+(%E5%AF%8C%E8%A1%9B%E9%87%91%E8%9E%8D%E4%B8%AD%E5%BF%83%E5%BA%97)/data=!4m2!3m1!1s0x3404007dd2ced109:0x5f8569e29a632622","category":"ベーカリー","area":"中環・上環","memo":"","sig":"キャラメルクロワッサン","pitch":"美心グループの人気ベーカリー。欧風パンやエッグタルト系も充実","photo":{"src":"img/f2864f0871.jpg","store":false,"author":"Herry Wibisono (herryway)","license":"CC0","page":"https://commons.wikimedia.org/wiki/File:Croissants_au_beurre_(18953292873).jpg"}},{"id":"0x340400c849af8e1b:0x4f13c319e049609e","title":"Hoi Kee Walnut Place","url":"https://www.google.com/maps/place/Hoi+Kee+Walnut+Place/data=!4m2!3m1!1s0x340400c849af8e1b:0x4f13c319e049609e","category":"スイーツ","area":"旺角・太子","memo":"","sig":"くるみ汁粉（核桃露）","pitch":"砕きくるみをのせた濃厚な核桃露が名物の糖水店","photo":{"src":"img/f56e53a0d1.jpg","store":false,"author":"Geoffreyrabbit","license":"CC BY-SA 4.0","page":"https://commons.wikimedia.org/wiki/File:Walnut_sweet_soup_in_dinner.jpg"}},{"id":"0x3404007c969f07bd:0x4647f7cabcf54249","title":"Social Place","url":"https://www.google.com/maps/place/Social+Place/data=!4m2!3m1!1s0x3404007c969f07bd:0x4647f7cabcf54249","category":"飲茶・点心","area":"中環・上環","memo":"","sig":"流沙カスタードまん・トリュフまん","pitch":"遊び心ある創作点心が人気。見た目も楽しいモダン飲茶","photo":{"src":"img/81c1ac7c9f.jpg","store":false,"author":"ZhengZhou","license":"CC BY-SA 4.0","page":"https://commons.wikimedia.org/wiki/File:Ha_Gow_(Cantonese_Shrimp_Dumplings).jpeg"}},{"id":"0x34040169661d5d5b:0x85e5ee214c28c262","title":"船記 Ship Kee","url":"https://www.google.com/maps/place/%E8%88%B9%E8%A8%98+Ship+Kee/data=!4m2!3m1!1s0x34040169661d5d5b:0x85e5ee214c28c262","category":"レストラン","area":"湾仔・銅鑼湾","memo":"","sig":"蜜汁叉焼（チャーシュー）","pitch":"ミシュラン・ビブグルマン。昔ながらの広東料理と叉焼・点心","photo":{"src":"img/7a96bf0f7b.jpg","store":false,"author":"Ceeseven","license":"CC BY-SA 4.0","page":"https://commons.wikimedia.org/wiki/File:Char_Siu_%26_Fried_Egg_with_Rice.jpg"}},{"id":"0x3404006456e0b357:0xd292c492c880241e","title":"Mott 32","url":"https://www.google.com/maps/place/Mott+32/data=!4m2!3m1!1s0x3404006456e0b357:0xd292c492c880241e","category":"レストラン","area":"中環・上環","memo":"","sig":"りんごの木で焼く北京ダック","pitch":"旧銀行金庫を改装した豪華空間。北京ダックと叉焼が看板","photo":{"src":"img/35c5276a4d.jpg","store":false,"author":"Mcyjerry","license":"CC BY-SA 4.0","page":"https://commons.wikimedia.org/wiki/File:Peking_duck_with_sugar_scallion.jpg"}},{"id":"0x34040056c6466afb:0x12ebb96e0eabd0bc","title":"Ho Hung Kee Congee \u0026 Noodle","url":"https://www.google.com/maps/place/Ho+Hung+Kee+Congee+%26+Noodle/data=!4m2!3m1!1s0x34040056c6466afb:0x12ebb96e0eabd0bc","category":"麺・粥","area":"湾仔・銅鑼湾","memo":"","sig":"ワンタン麺・お粥","pitch":"ミシュラン星獲得歴のある1946年創業の老舗粥麺店","photo":{"src":"img/8bea7e0d92.jpg","store":false,"author":"cattan2011","license":"CC BY 2.0","page":"https://commons.wikimedia.org/wiki/File:Wonton_noodle-_Sai_Yung_Kee,_Hong_Kong.jpg"}},{"id":"0x340401bb23dd1559:0x37f3ae97fdd606c1","title":"湯糖堂 Tong Tong Tong","url":"https://www.google.com/maps/place/%E6%B9%AF%E7%B3%96%E5%A0%82+Tong+Tong+Tong/data=!4m2!3m1!1s0x340401bb23dd1559:0x37f3ae97fdd606c1","category":"スイーツ","area":"尖沙咀","memo":"","sig":"糖水（推定）","pitch":"情報が見つからず。店名から糖水店と推定","photo":{"src":"img/2786c4f650.jpg","store":false,"author":"2225Group8","license":"CC BY-SA 3.0","page":"https://commons.wikimedia.org/wiki/File:Chinese_tongsui_-_Sesame_paste.jpg"}},{"id":"0x340400f279e21d67:0xd6c9dc062a8f1308","title":"Mak\u0027s Noodle","url":"https://www.google.com/maps/place/Mak\u0027s+Noodle/data=!4m2!3m1!1s0x340400f279e21d67:0xd6c9dc062a8f1308","category":"麺・粥","area":"中環・上環","memo":"","sig":"エビワンタン麺","pitch":"ミシュラン掲載の老舗。小ぶりの器に細麺とエビワンタン","photo":{"src":"img/776cbfea93.jpg","store":true,"author":"LN9267","license":"CC BY-SA 4.0","page":"https://commons.wikimedia.org/wiki/File:The_Peak_Mak%27s_Noodle_Wonton_noodle_soup_09-11-2021.jpg"}},{"id":"0x34040191589e4f8d:0xaece7d037d17d3eb","title":"Luk On Kui","url":"https://www.google.com/maps/place/Luk+On+Kui/data=!4m2!3m1!1s0x34040191589e4f8d:0xaece7d037d17d3eb","category":"飲茶・点心","area":"中環・上環","memo":"","sig":"ワゴン点心（豚レバー焼売）","pitch":"旧・蓮香居。ワゴンで回る昔ながらの賑やかな飲茶","photo":{"src":"img/81c1ac7c9f.jpg","store":false,"author":"ZhengZhou","license":"CC BY-SA 4.0","page":"https://commons.wikimedia.org/wiki/File:Ha_Gow_(Cantonese_Shrimp_Dumplings).jpeg"}},{"id":"0x3404005b9b663095:0xd67351636faea241","title":"Shiu Shing Hong","url":"https://www.google.com/maps/place/Shiu+Shing+Hong/data=!4m2!3m1!1s0x3404005b9b663095:0xd67351636faea241","category":"観光・買い物","area":"中環・上環","memo":"","sig":"精油・コスメ原料","pitch":"精油や化粧品原料を扱う専門店。手作りコスメ派に人気","photo":null},{"id":"0x340400c62bc7810f:0x3ba12a5918081894","title":"Mong Kok","url":"https://www.google.com/maps/place/Mong+Kok/data=!4m2!3m1!1s0x340400c62bc7810f:0x3ba12a5918081894","category":"観光・買い物","area":"旺角・太子","memo":"","sig":"ネオン街と女人街","pitch":"ネオンと人波の香港らしい繁華街。女人街や金魚街も","photo":{"src":"img/469b26bf33.jpg","store":true,"author":"David Kernan","license":"CC BY 4.0","page":"https://commons.wikimedia.org/wiki/File:Red_Minibuses_and_Urban_Density_Mong_Kok_Hong_Kong.jpg"}},{"id":"0x340406cfa193d6f7:0xfb9f0fbb15caca22","title":"Choi Hung Estate","url":"https://www.google.com/maps/place/Choi+Hung+Estate/data=!4m2!3m1!1s0x340406cfa193d6f7:0xfb9f0fbb15caca22","category":"観光・買い物","area":"その他","memo":"","sig":"虹色の公営団地","pitch":"レインボーカラーの外壁とバスケコートが人気の撮影スポット","photo":{"src":"img/70be310eda.jpg","store":true,"author":"LN9267","license":"CC BY-SA 4.0","page":"https://commons.wikimedia.org/wiki/File:Choi_Hung_Estate_Badminton_and_Basketball_Court_08-01-2024(17).jpg"}},{"id":"0x3404005b7e61fe79:0x242571e635c3d8ee","title":"Wan Chai","url":"https://www.google.com/maps/place/Wan+Chai/data=!4m2!3m1!1s0x3404005b7e61fe79:0x242571e635c3d8ee","category":"観光・買い物","area":"湾仔・銅鑼湾","memo":"","sig":"新旧が混ざる下町散策","pitch":"古い唐楼や市場、洪聖古廟と高層ビルが混在するエリア","photo":{"src":"img/316d022781.jpg","store":true,"author":"Leila Izachi","license":"CC BY-SA 4.0","page":"https://commons.wikimedia.org/wiki/File:Wan_Chai,_Hong_Kong.jpg"}},{"id":"0x34040102f2c91d81:0xfa546f3e6b987fcf","title":"Australia Dairy Company","url":"https://www.google.com/maps/place/Australia+Dairy+Company/data=!4m2!3m1!1s0x34040102f2c91d81:0xfa546f3e6b987fcf","category":"茶餐廳","area":"佐敦・油麻地","memo":"","sig":"スクランブルエッグトースト","pitch":"佐敦の超人気茶餐廳。ふわとろ卵トーストと牛乳プリン","photo":{"src":"img/ee551fe3cd.jpg","store":true,"author":"City Foodsters","license":"CC BY 2.0","page":"https://commons.wikimedia.org/wiki/File:Australia_Dairy_Company_-_Ham_and_Egg_Sandwich.jpg"}},{"id":"0x34040170af69db11:0xcac49df84444dd00","title":"Uncle Ben Coffee","url":"https://www.google.com/maps/place/Uncle+Ben+Coffee/data=!4m2!3m1!1s0x34040170af69db11:0xcac49df84444dd00","category":"カフェ","area":"その他","memo":"","sig":"自家焙煎「168ハウスブレンド」","pitch":"自家焙煎の極小スタンド。2種のカップで飲み比べ、ラテアートも評判","photo":{"src":"img/738e196768.jpg","store":false,"author":"Mortefot from Flickr","license":"CC BY-SA 2.0","page":"https://commons.wikimedia.org/wiki/File:Latte_art.jpg"}},{"id":"0x3403ffbc4081b9a3:0x322c4b0562d3ebe9","title":"Little Cove Espresso","url":"https://www.google.com/maps/place/Little+Cove+Espresso/data=!4m2!3m1!1s0x3403ffbc4081b9a3:0x322c4b0562d3ebe9","category":"カフェ","area":"その他","memo":"","sig":"フラットホワイト＆フレンチトースト","pitch":"西貢発のメルボルン系カフェ。名物フレンチトーストとフラットホワイト","photo":{"src":"img/738e196768.jpg","store":false,"author":"Mortefot from Flickr","license":"CC BY-SA 2.0","page":"https://commons.wikimedia.org/wiki/File:Latte_art.jpg"}},{"id":"0x3404007ea4210001:0x82d0f3c681b9d027","title":"Halfway Coffee","url":"https://www.google.com/maps/place/Halfway+Coffee/data=!4m2!3m1!1s0x3404007ea4210001:0x82d0f3c681b9d027","category":"カフェ","area":"中環・上環","memo":"","sig":"ヴィンテージ磁器カップのラテ","pitch":"キャットストリート近く。香港の古い磁器カップで出すコーヒーが名物","photo":{"src":"img/738e196768.jpg","store":false,"author":"Mortefot from Flickr","license":"CC BY-SA 2.0","page":"https://commons.wikimedia.org/wiki/File:Latte_art.jpg"}},{"id":"0x3404007effa8889d:0xec90259d78c0b885","title":"Coffee \u0026 Laundry","url":"https://www.google.com/maps/place/Coffee+%26+Laundry/data=!4m2!3m1!1s0x3404007effa8889d:0xec90259d78c0b885","category":"カフェ","area":"中環・上環","memo":"","sig":"ピッコロラテ","pitch":"コインランドリー併設のテイクアウトコーヒーバー。上環Queen Street","photo":{"src":"img/738e196768.jpg","store":false,"author":"Mortefot from Flickr","license":"CC BY-SA 2.0","page":"https://commons.wikimedia.org/wiki/File:Latte_art.jpg"}},{"id":"0x3404017efe78cc49:0x66add9b61398c9c6","title":"hara kako (Sheung Wan)","url":"https://www.google.com/maps/place/hara+kako+(Sheung+Wan)/data=!4m2!3m1!1s0x3404017efe78cc49:0x66add9b61398c9c6","category":"カフェ","area":"中環・上環","memo":"","sig":"ハンドドリップ＆抹茶クレープケーキ","pitch":"乾物問屋街に佇む和風ミニマルカフェ。ハンドドリップと抹茶ミルクレープ","photo":{"src":"img/738e196768.jpg","store":false,"author":"Mortefot from Flickr","license":"CC BY-SA 2.0","page":"https://commons.wikimedia.org/wiki/File:Latte_art.jpg"}},{"id":"0x3404012f3ce69745:0x34d5ab38012aec07","title":"E N","url":"https://www.google.com/maps/place/E+N/data=!4m2!3m1!1s0x3404012f3ce69745:0x34d5ab38012aec07","category":"カフェ","area":"中環・上環","memo":"","sig":"バスクチーズケーキ＆シングルオリジン","pitch":"上環・Shin Hing Streetの人気カフェ。ふわとろバスクチーズケーキ","photo":{"src":"img/738e196768.jpg","store":false,"author":"Mortefot from Flickr","license":"CC BY-SA 2.0","page":"https://commons.wikimedia.org/wiki/File:Latte_art.jpg"}},{"id":"0x340401b2c4b7f503:0x9e057a9270a7c721","title":"PRIMARY","url":"https://www.google.com/maps/place/PRIMARY/data=!4m2!3m1!1s0x340401b2c4b7f503:0x9e057a9270a7c721","category":"カフェ","area":"その他","memo":"","sig":"","pitch":"情報が見つかりませんでした。Googleマップのレビューで確認してください","photo":null},{"id":"0x3403ff94986067e3:0x89c10009c193d434","title":"café lemo","url":"https://www.google.com/maps/place/caf%C3%A9+lemo/data=!4m2!3m1!1s0x3403ff94986067e3:0x89c10009c193d434","category":"カフェ","area":"その他","memo":"","sig":"","pitch":"情報が見つかりませんでした。Googleマップのレビューで確認してください","photo":null},{"id":"0x3404016355fbec0d:0x325dd7259f4ff409","title":"Lazy Sunday","url":"https://www.google.com/maps/place/Lazy+Sunday/data=!4m2!3m1!1s0x3404016355fbec0d:0x325dd7259f4ff409","category":"カフェ","area":"中環・上環","memo":"","sig":"ウィンナーコーヒー","pitch":"韓国風ミニマルカフェ。クリームたっぷりのウィンナーコーヒーとダーティ抹茶","photo":{"src":"img/738e196768.jpg","store":false,"author":"Mortefot from Flickr","license":"CC BY-SA 2.0","page":"https://commons.wikimedia.org/wiki/File:Latte_art.jpg"}},{"id":"0x340401bbe690d2ab:0x604e9c8a1a7f405c","title":"NUTMAD","url":"https://www.google.com/maps/place/NUTMAD/data=!4m2!3m1!1s0x340401bbe690d2ab:0x604e9c8a1a7f405c","category":"カフェ","area":"その他","memo":"","sig":"フレンチトースト＆カルボナーラ","pitch":"ボリューム満点のフレンチトーストとカルボナーラで人気のカフェダイニング","photo":{"src":"img/abd4428379.jpg","store":false,"author":"Melvin Loi from Macau, Macau","license":"CC BY-SA 2.0","page":"https://commons.wikimedia.org/wiki/File:Hong_Kong-style_French_toast_(5522869044).jpg"}},{"id":"0x3404015191e41dc5:0xe649d2632a2878f4","title":"DOZY","url":"https://www.google.com/maps/place/DOZY/data=!4m2!3m1!1s0x3404015191e41dc5:0xe649d2632a2878f4","category":"カフェ","area":"深水埗","memo":"","sig":"ナッツ系スモーキーなコーヒー","pitch":"深水埗発のインダストリアル系カフェ。高天井の空間とケーキ","photo":{"src":"img/738e196768.jpg","store":false,"author":"Mortefot from Flickr","license":"CC BY-SA 2.0","page":"https://commons.wikimedia.org/wiki/File:Latte_art.jpg"}},{"id":"0x3404007b8dbaaaab:0x91166135d995d8b2","title":"PMQ","url":"https://www.google.com/maps/place/PMQ/data=!4m2!3m1!1s0x3404007b8dbaaaab:0x91166135d995d8b2","category":"観光・買い物","area":"中環・上環","memo":"","sig":"旧警察宿舎のデザイン複合施設","pitch":"旧既婚警察官宿舎を改装。地元デザイナーのショップや飲食が集まる","photo":{"src":"img/03fac4cdb4.jpg","store":true,"author":"Feeiduhjudy","license":"CC BY-SA 4.0","page":"https://commons.wikimedia.org/wiki/File:HK_%E4%B8%AD%E7%92%B0_Central_%E8%98%87%E8%B1%AA%E5%8D%80_Soho_%E5%A3%AB%E4%B8%B9%E9%A0%93%E8%A1%97_Staunton_Street_PMQ_May_2020_SS2_01.jpg"}},{"id":"0x340401f3df81a725:0x61c4906c6fa6e132","title":"K11 MUSEA","url":"https://www.google.com/maps/place/K11+MUSEA/data=!4m2!3m1!1s0x340401f3df81a725:0x61c4906c6fa6e132","category":"観光・買い物","area":"尖沙咀","memo":"","sig":"アート×建築の複合モール","pitch":"尖沙咀ハーバーフロントのアート系モール。建築・展示も見どころ","photo":{"src":"img/f76eac0dc3.jpg","store":true,"author":"YPSLEIAHEE","license":"CC BY-SA 4.0","page":"https://commons.wikimedia.org/wiki/File:HK_TST_%E5%B0%96%E6%B2%99%E5%92%80_Tsim_Sha_Tsui_%E6%A2%B3%E5%A3%AB%E5%B7%B4%E5%88%A9%E9%81%93_Salisbury_Road_K11_Musea_mall_terrace_garden_%E5%AD%94%E9%9B%80_December_2022_Px3.jpg"}},{"id":"0x3404010060bbf94f:0x6874ebec555d3df0","title":"Montana","url":"https://www.google.com/maps/place/Montana/data=!4m2!3m1!1s0x3404010060bbf94f:0x6874ebec555d3df0","category":"バー","area":"中環・上環","memo":"","sig":"ラム系クラシック「エル・プレシデンテ」","pitch":"World\u0027s Best Bar「Bar Leone」の姉妹店。キューバ×マイアミがテーマ","photo":{"src":"img/85e5ef9dbf.jpg","store":false,"author":"Minderbinder","license":"CC BY-SA 3.0","page":"https://commons.wikimedia.org/wiki/File:Last_Word_cocktail_in_a_bar.JPG"}},{"id":"0x340401460ca0e70d:0xa5d65901645b56c0","title":"Messina","url":"https://www.google.com/maps/place/Messina/data=!4m2!3m1!1s0x340401460ca0e70d:0xa5d65901645b56c0","category":"スイーツ","area":"中環・上環","memo":"","sig":"香港限定エッグタルト味ジェラート","pitch":"豪州発の人気ジェラート。エッグタルトやミルクティーなど香港限定味","photo":{"src":"img/a1084e0aa3.jpg","store":false,"author":"AlphaLemur","license":"CC BY-SA 4.0","page":"https://commons.wikimedia.org/wiki/File:Ice_cream_in_cones.jpg"}},{"id":"0x3404010024e5c5f9:0x8365fdd8f00447b4","title":"Snack Baby Gelato \u0026 Drinks (Hollywood Road)","url":"https://www.google.com/maps/place/Snack+Baby+Gelato+%26+Drinks+(Hollywood+Road)/data=!4m2!3m1!1s0x3404010024e5c5f9:0x8365fdd8f00447b4","category":"スイーツ","area":"中環・上環","memo":"","sig":"乳製品不使用ジェラート＆カクテル","pitch":"ミシュランガイド2025掲載。ヴィーガンジェラートとカクテルの店","photo":{"src":"img/a1084e0aa3.jpg","store":false,"author":"AlphaLemur","license":"CC BY-SA 4.0","page":"https://commons.wikimedia.org/wiki/File:Ice_cream_in_cones.jpg"}},{"id":"0x3404012ef3ca3205:0x17cafaed59fe71bd","title":"DarkSide","url":"https://www.google.com/maps/place/DarkSide/data=!4m2!3m1!1s0x3404012ef3ca3205:0x17cafaed59fe71bd","category":"バー","area":"尖沙咀","memo":"","sig":"シグネチャーカクテル","pitch":"ローズウッド香港のバー。アジアベストバー50常連（2023年9位）","photo":{"src":"img/85e5ef9dbf.jpg","store":false,"author":"Minderbinder","license":"CC BY-SA 3.0","page":"https://commons.wikimedia.org/wiki/File:Last_Word_cocktail_in_a_bar.JPG"}},{"id":"0x34040152512d868d:0x213f180f88935e4","title":"The Diplomat Hong Kong","url":"https://www.google.com/maps/place/The+Diplomat+Hong+Kong/data=!4m2!3m1!1s0x34040152512d868d:0x213f180f88935e4","category":"バー","area":"中環・上環","memo":"","sig":"再解釈クラシックカクテル","pitch":"アメリカンスピークイージー。アジアベストバー50で2021年20位","photo":{"src":"img/85e5ef9dbf.jpg","store":false,"author":"Minderbinder","license":"CC BY-SA 3.0","page":"https://commons.wikimedia.org/wiki/File:Last_Word_cocktail_in_a_bar.JPG"}},{"id":"0x340401c8427a3c87:0xda94f37257adf16a","title":"Qura Bar - Best Restaurant Bar","url":"https://www.google.com/maps/place/Qura+Bar+-+Best+Restaurant+Bar/data=!4m2!3m1!1s0x340401c8427a3c87:0xda94f37257adf16a","category":"バー","area":"尖沙咀","memo":"","sig":"希少スピリッツ＆ハーバービュー","pitch":"リージェント香港の旗艦バー。ビクトリアハーバーの絶景と希少酒","photo":{"src":"img/85e5ef9dbf.jpg","store":false,"author":"Minderbinder","license":"CC BY-SA 3.0","page":"https://commons.wikimedia.org/wiki/File:Last_Word_cocktail_in_a_bar.JPG"}},{"id":"0x34040174e73b1487:0x4becd8bbf1b06c1c","title":"Dragonfly","url":"https://www.google.com/maps/place/Dragonfly/data=!4m2!3m1!1s0x34040174e73b1487:0x4becd8bbf1b06c1c","category":"バー","area":"中環・上環","memo":"","sig":"名物カクテル『Tiffany』","pitch":"大館内のアールヌーボー調バー。巨大トンボのオブジェと装飾が圧巻","photo":{"src":"img/85e5ef9dbf.jpg","store":false,"author":"Minderbinder","license":"CC BY-SA 3.0","page":"https://commons.wikimedia.org/wiki/File:Last_Word_cocktail_in_a_bar.JPG"}},{"id":"0x3404013b117b4923:0x338b69bb00178089","title":"the Greenroom","url":"https://www.google.com/maps/place/the+Greenroom/data=!4m2!3m1!1s0x3404013b117b4923:0x338b69bb00178089","category":"バー","area":"その他","memo":"","sig":"クラフトカクテル","pitch":"アッパーハウス49階のラウンジ。舞台裏がテーマのシックな空間","photo":{"src":"img/85e5ef9dbf.jpg","store":false,"author":"Minderbinder","license":"CC BY-SA 3.0","page":"https://commons.wikimedia.org/wiki/File:Last_Word_cocktail_in_a_bar.JPG"}},{"id":"0x3404016b4a2a50db:0x5e941b3401351fd0","title":"ZZURA","url":"https://www.google.com/maps/place/ZZURA/data=!4m2!3m1!1s0x3404016b4a2a50db:0x5e941b3401351fd0","category":"バー","area":"中環・上環","memo":"","sig":"中東スパイスのカクテル","pitch":"幻の砂漠都市がテーマの中東系スピークイージー。中東料理の小皿も","photo":{"src":"img/85e5ef9dbf.jpg","store":false,"author":"Minderbinder","license":"CC BY-SA 3.0","page":"https://commons.wikimedia.org/wiki/File:Last_Word_cocktail_in_a_bar.JPG"}},{"id":"0x3404007b20a80651:0x4ccb8bd421fde58b","title":"dragon-i","url":"https://www.google.com/maps/place/dragon-i/data=!4m2!3m1!1s0x3404007b20a80651:0x4ccb8bd421fde58b","category":"バー","area":"中環・上環","memo":"","sig":"点心ランチ＆ナイトクラブ","pitch":"2002年開業の老舗。昼はレストラン、夜はセレブ御用達クラブ","photo":{"src":"img/0856c36d83.jpg","store":false,"author":"SOJackieHO","license":"CC BY-SA 3.0","page":"https://commons.wikimedia.org/wiki/File:HK_Central_Lan_Kwai_Fong_Bar_nite_a.jpg"}},{"id":"0x3403ff8136dcf6a7:0x86d280b9262b30a7","title":"Ping Pong 129","url":"https://www.google.com/maps/place/Ping+Pong+129/data=!4m2!3m1!1s0x3403ff8136dcf6a7:0x86d280b9262b30a7","category":"バー","area":"その他","memo":"","sig":"スパニッシュ・ジントニック","pitch":"旧卓球場を改装したジン専門バー。豊富なジンとタパス","photo":{"src":"img/85e5ef9dbf.jpg","store":false,"author":"Minderbinder","license":"CC BY-SA 3.0","page":"https://commons.wikimedia.org/wiki/File:Last_Word_cocktail_in_a_bar.JPG"}},{"id":"0x3404014eac117c6f:0xbbca20d8fe265b6a","title":"Gishiki Lounge","url":"https://www.google.com/maps/place/Gishiki+Lounge/data=!4m2!3m1!1s0x3404014eac117c6f:0xbbca20d8fe265b6a","category":"バー","area":"中環・上環","memo":"","sig":"能がテーマの和風カクテル","pitch":"大館内の隠れ家バー。鮨Zoの姉妹店で能の三幕構成メニュー","photo":{"src":"img/85e5ef9dbf.jpg","store":false,"author":"Minderbinder","license":"CC BY-SA 3.0","page":"https://commons.wikimedia.org/wiki/File:Last_Word_cocktail_in_a_bar.JPG"}},{"id":"0x3404011cc787e393:0x5205609c34a5eb96","title":"Artifact","url":"https://www.google.com/maps/place/Artifact/data=!4m2!3m1!1s0x3404011cc787e393:0x5205609c34a5eb96","category":"バー","area":"中環・上環","memo":"","sig":"熟成ブラウンスピリッツのカクテル","pitch":"地下貯水池がモチーフのSF的空間。熟成スピリッツ中心のスピークイージー","photo":{"src":"img/85e5ef9dbf.jpg","store":false,"author":"Minderbinder","license":"CC BY-SA 3.0","page":"https://commons.wikimedia.org/wiki/File:Last_Word_cocktail_in_a_bar.JPG"}},{"id":"0x340401b32b6c5d71:0x584a480d560f0660","title":"Dirty Laundry HK","url":"https://www.google.com/maps/place/Dirty+Laundry+HK/data=!4m2!3m1!1s0x340401b32b6c5d71:0x584a480d560f0660","category":"バー","area":"湾仔・銅鑼湾","memo":"","sig":"名物カクテル「Wanchai Dreams」","pitch":"偽コインランドリーの奥に隠れたスピークイージー・バー","photo":{"src":"img/85e5ef9dbf.jpg","store":false,"author":"Minderbinder","license":"CC BY-SA 3.0","page":"https://commons.wikimedia.org/wiki/File:Last_Word_cocktail_in_a_bar.JPG"}},{"id":"0x340407000ecfc40b:0xca10c2767b4f29a4","title":"Dragons\u0027 Den","url":"https://www.google.com/maps/place/Dragons\u0027+Den/data=!4m2!3m1!1s0x340407000ecfc40b:0xca10c2767b4f29a4","category":"レストラン","area":"その他","memo":"","sig":"燻製揚げ鳩＋飲茶","pitch":"獅子山麓の団地モールにあるレトロな広東料理店。ミシュラン掲載","photo":{"src":"img/ea9539c658.jpg","store":false,"author":"Unknown author","license":"CC BY-SA 2.5","page":"https://commons.wikimedia.org/wiki/File:HK_food_Crispy_Deep_Fried_Chicken.JPG"}},{"id":"0x340401d82bfb54d9:0xf5ce067f25cf2603","title":"Lantern Seafood Restaurant","url":"https://www.google.com/maps/place/Lantern+Seafood+Restaurant/data=!4m2!3m1!1s0x340401d82bfb54d9:0xf5ce067f25cf2603","category":"レストラン","area":"佐敦・油麻地","memo":"","sig":"蟹料理・子豚の丸焼き","pitch":"佐敦の海鮮広東料理店。昼は飲茶、夜は豪華な海鮮が主役","photo":{"src":"img/9b93f72f9a.jpg","store":false,"author":"ZhengZhou","license":"CC BY-SA 4.0","page":"https://commons.wikimedia.org/wiki/File:Causeway_Bay_Typhoon_Shelter_Crab.jpg"}},{"id":"0x34040169c2351dbf:0x92da728162cdc611","title":"The Aubrey","url":"https://www.google.com/maps/place/The+Aubrey/data=!4m2!3m1!1s0x34040169c2351dbf:0x92da728162cdc611","category":"バー","area":"中環・上環","memo":"","sig":"日本酒・和風カクテル","pitch":"マンダリン25階の居酒屋風バー。アジアベストバー50で10位","photo":{"src":"img/85e5ef9dbf.jpg","store":false,"author":"Minderbinder","license":"CC BY-SA 3.0","page":"https://commons.wikimedia.org/wiki/File:Last_Word_cocktail_in_a_bar.JPG"}},{"id":"0x3404017c16036739:0x41679c761c354b7e","title":"Ming Pavilion","url":"https://www.google.com/maps/place/Ming+Pavilion/data=!4m2!3m1!1s0x3404017c16036739:0x41679c761c354b7e","category":"レストラン","area":"その他","memo":"","sig":"佛跳牆など福建料理","pitch":"アイランド・シャングリラ内、香港では珍しい高級福建料理","photo":{"src":"img/b7929ecd9e.jpg","store":false,"author":"N509FZ","license":"CC BY-SA 4.0","page":"https://commons.wikimedia.org/wiki/File:Buddha_jumps_over_the_wall_at_Jingrong_(20161203135907).jpg"}},{"id":"0x3404007b9ca2027b:0x64470d09bc46ad83","title":"Ho Lee Fook","url":"https://www.google.com/maps/place/Ho+Lee+Fook/data=!4m2!3m1!1s0x3404007b9ca2027b:0x64470d09bc46ad83","category":"レストラン","area":"中環・上環","memo":"","sig":"焼きガチョウ・和牛ショートリブ","pitch":"ネオン輝く遊び心ある広東モダン。ガチョウのローストが評判","photo":{"src":"img/7006a5b849.jpg","store":false,"author":"Ceeseven","license":"CC BY-SA 4.0","page":"https://commons.wikimedia.org/wiki/File:Roast_Goose_Rice_with_Plum_Sauce.jpg"}},{"id":"0x34040064dff50bb5:0x7f5bb9bd3c259897","title":"Duddell\u0027s","url":"https://www.google.com/maps/place/Duddell\u0027s/data=!4m2!3m1!1s0x34040064dff50bb5:0x7f5bb9bd3c259897","category":"レストラン","area":"中環・上環","memo":"","sig":"クリスピー塩焼きチキン・点心","pitch":"アートと美食の融合。10年連続ミシュラン星の広東料理","photo":{"src":"img/ea9539c658.jpg","store":false,"author":"Unknown author","license":"CC BY-SA 2.5","page":"https://commons.wikimedia.org/wiki/File:HK_food_Crispy_Deep_Fried_Chicken.JPG"}},{"id":"0x340400f2ee763a2f:0xe7eecb87800e5740","title":"Hutong","url":"https://www.google.com/maps/place/Hutong/data=!4m2!3m1!1s0x340400f2ee763a2f:0xe7eecb87800e5740","category":"レストラン","area":"尖沙咀","memo":"","sig":"骨なしラムリブの揚げ物","pitch":"尖沙咀ワン・ペキン28階、港の夜景と北方中華","photo":{"src":"img/220fdb4c26.jpg","store":false,"author":"Guilhem Vellut from Paris, France","license":"CC BY 2.0","page":"https://commons.wikimedia.org/wiki/File:Lamb_ribs_@_Restaurant_Shanxi_@_Paris_(34890500385).jpg"}},{"id":"0x3404014edaeadd55:0x2129895fafa2ece1","title":"YKY Homemade Noodle (Central)","url":"https://www.google.com/maps/place/YKY+Homemade+Noodle+(Central)/data=!4m2!3m1!1s0x3404014edaeadd55:0x2129895fafa2ece1","category":"麺・粥","area":"中環・上環","memo":"","sig":"自家製手打ち麺","pitch":"自家製麺とスープが評判の麺店（油麻地店の中環支店か）","photo":{"src":"img/d3fb82fe99.jpg","store":false,"author":"Peachyeung316","license":"CC BY-SA 4.0","page":"https://commons.wikimedia.org/wiki/File:A_Lo_mein_with_shrimp_roe_at_Ho_To_Tai_Chinese_Noodle_Shop.jpg"}},{"id":"0x340401006856394f:0x4a60e431e21ced35","title":"LAI\u0027s Kitchen","url":"https://www.google.com/maps/place/LAI\u0027s+Kitchen/data=!4m2!3m1!1s0x340401006856394f:0x4a60e431e21ced35","category":"焼味・煲仔飯","area":"湾仔・銅鑼湾","memo":"","sig":"土鍋ご飯3種盛り","pitch":"鋒膳チームの現代版大牌檔。ミシュラン・ビブグルマン","photo":{"src":"img/81572cae30.jpg","store":false,"author":"Ceeseven","license":"CC BY-SA 4.0","page":"https://commons.wikimedia.org/wiki/File:Spare_Rib_%26_Chicken_Feet_Claypot_Rice.jpg"}},{"id":"0x3403ff9a600b14b7:0xd192d816db2a14b2","title":"Sheung Hei","url":"https://www.google.com/maps/place/Sheung+Hei/data=!4m2!3m1!1s0x3403ff9a600b14b7:0xd192d816db2a14b2","category":"焼味・煲仔飯","area":"その他","memo":"","sig":"炭火の煲仔飯（土鍋ご飯）","pitch":"炭火で焚く30種超の土鍋ご飯。ビブグルマンの行列店","photo":{"src":"img/81572cae30.jpg","store":false,"author":"Ceeseven","license":"CC BY-SA 4.0","page":"https://commons.wikimedia.org/wiki/File:Spare_Rib_%26_Chicken_Feet_Claypot_Rice.jpg"}},{"id":"0x34040044a6224785:0x8e50e093edbce703","title":"鋒膳 Flower Drum","url":"https://www.google.com/maps/place/%E9%8B%92%E8%86%B3+Flower+Drum/data=!4m2!3m1!1s0x34040044a6224785:0x8e50e093edbce703","category":"レストラン","area":"湾仔・銅鑼湾","memo":"","sig":"宮崎豚のチャーシュー","pitch":"湾仔の上質広東料理。熟成豚の焗豬扒飯も名物","photo":{"src":"img/7a96bf0f7b.jpg","store":false,"author":"Ceeseven","license":"CC BY-SA 4.0","page":"https://commons.wikimedia.org/wiki/File:Char_Siu_%26_Fried_Egg_with_Rice.jpg"}},{"id":"0x340401609c183f71:0xbf22f1b373ea94ad","title":"Penicillin","url":"https://www.google.com/maps/place/Penicillin/data=!4m2!3m1!1s0x340401609c183f71:0xbf22f1b373ea94ad","category":"バー","area":"中環・上環","memo":"","sig":"サステナブルな発酵カクテル","pitch":"The Old Manチームのエコ・バー。アジアベストバー50常連","photo":{"src":"img/85e5ef9dbf.jpg","store":false,"author":"Minderbinder","license":"CC BY-SA 3.0","page":"https://commons.wikimedia.org/wiki/File:Last_Word_cocktail_in_a_bar.JPG"}},{"id":"0x3404017d5bb4496b:0x8530994ced418c24","title":"ARGO","url":"https://www.google.com/maps/place/ARGO/data=!4m2!3m1!1s0x3404017d5bb4496b:0x8530994ced418c24","category":"バー","area":"中環・上環","memo":"","sig":"名物カクテル（未来の原料テーマ）","pitch":"フォーシーズンズのバー。世界ベストバー50で2026年25位","photo":{"src":"img/85e5ef9dbf.jpg","store":false,"author":"Minderbinder","license":"CC BY-SA 3.0","page":"https://commons.wikimedia.org/wiki/File:Last_Word_cocktail_in_a_bar.JPG"}},{"id":"0x34040150a749c96d:0xbcf6b67a9b1c8299","title":"MIUS","url":"https://www.google.com/maps/place/MIUS/data=!4m2!3m1!1s0x34040150a749c96d:0xbcf6b67a9b1c8299","category":"バー","area":"中環・上環","memo":"","sig":"冷凍ウイスキーのハイボール","pitch":"2025年開業、Shelley Taiの近所バー。歌賦街のカクテルバー","photo":{"src":"img/85e5ef9dbf.jpg","store":false,"author":"Minderbinder","license":"CC BY-SA 3.0","page":"https://commons.wikimedia.org/wiki/File:Last_Word_cocktail_in_a_bar.JPG"}},{"id":"0x340401007b5e9647:0x163bd3c07f2fac4a","title":"GOKAN","url":"https://www.google.com/maps/place/GOKAN/data=!4m2!3m1!1s0x340401007b5e9647:0x163bd3c07f2fac4a","category":"バー","area":"中環・上環","memo":"","sig":"五感テーマのカクテル","pitch":"後閑信吾の香港バー。開業1年でアジアベストバー50入り","photo":{"src":"img/85e5ef9dbf.jpg","store":false,"author":"Minderbinder","license":"CC BY-SA 3.0","page":"https://commons.wikimedia.org/wiki/File:Last_Word_cocktail_in_a_bar.JPG"}},{"id":"0x340401d78abe22fb:0xec418e66a8f5bdb0","title":"One Dim Sum","url":"https://www.google.com/maps/place/One+Dim+Sum/data=!4m2!3m1!1s0x340401d78abe22fb:0xec418e66a8f5bdb0","category":"飲茶・点心","area":"旺角・太子","memo":"","sig":"焼売・蝦餃など点心","pitch":"かつてミシュラン一つ星を得た太子の格安点心店","photo":{"src":"img/81c1ac7c9f.jpg","store":false,"author":"ZhengZhou","license":"CC BY-SA 4.0","page":"https://commons.wikimedia.org/wiki/File:Ha_Gow_(Cantonese_Shrimp_Dumplings).jpeg"}},{"id":"0x340401f576b110b5:0x3a2e5b816b951779","title":"Canton\u0027s Kitchen Dim Sum Expert","url":"https://www.google.com/maps/place/Canton\u0027s+Kitchen+Dim+Sum+Expert/data=!4m2!3m1!1s0x340401f576b110b5:0x3a2e5b816b951779","category":"飲茶・点心","area":"佐敦・油麻地","memo":"","sig":"蝦餃・焼売など点心","pitch":"彌敦道沿いの手頃な点心専門店","photo":{"src":"img/81c1ac7c9f.jpg","store":false,"author":"ZhengZhou","license":"CC BY-SA 4.0","page":"https://commons.wikimedia.org/wiki/File:Ha_Gow_(Cantonese_Shrimp_Dumplings).jpeg"}},{"id":"0x340400ea71f0f27d:0x4cd602d4a44ce580","title":"Yat Tung Heen - Eaton HK","url":"https://www.google.com/maps/place/Yat+Tung+Heen+-+Eaton+HK/data=!4m2!3m1!1s0x340400ea71f0f27d:0x4cd602d4a44ce580","category":"レストラン","area":"佐敦・油麻地","memo":"","sig":"クリスピー丸揚げチキン・点心","pitch":"1990年創業、ミシュラン一つ星の正統派広東料理","photo":{"src":"img/ea9539c658.jpg","store":false,"author":"Unknown author","license":"CC BY-SA 2.5","page":"https://commons.wikimedia.org/wiki/File:HK_food_Crispy_Deep_Fried_Chicken.JPG"}},{"id":"0x340400c05733e8f3:0x6bd784ed56b0a43e","title":"Hing Kee Restaurant","url":"https://www.google.com/maps/place/Hing+Kee+Restaurant/data=!4m2!3m1!1s0x340400c05733e8f3:0x6bd784ed56b0a43e","category":"焼味・煲仔飯","area":"佐敦・油麻地","memo":"","sig":"土鍋ご飯＋牡蠣のお好み焼き","pitch":"廟街の煲仔飯の名店。1980年頃創業、40種超の土鍋飯","photo":{"src":"img/81572cae30.jpg","store":false,"author":"Ceeseven","license":"CC BY-SA 4.0","page":"https://commons.wikimedia.org/wiki/File:Spare_Rib_%26_Chicken_Feet_Claypot_Rice.jpg"}},{"id":"0x3404005ca52615bb:0xfd990400e92e0534","title":"Sun King Yuen Curry Restaurant","url":"https://www.google.com/maps/place/Sun+King+Yuen+Curry+Restaurant/data=!4m2!3m1!1s0x3404005ca52615bb:0xfd990400e92e0534","category":"茶餐廳","area":"湾仔・銅鑼湾","memo":"","sig":"カレーポークチョップライス","pitch":"湾仔の老舗カレー食堂。乾炒牛河も人気で行列必至","photo":{"src":"img/a2cadcb0d4.jpg","store":false,"author":"John Seb Barber","license":"CC BY 2.0","page":"https://commons.wikimedia.org/wiki/File:Curry_Beef_Pot_in_Hong_Kong_style.jpg"}},{"id":"0x340401004f31183b:0x8a03d134cb7ddceb","title":"Social Goods Modern Bakery","url":"https://www.google.com/maps/place/Social+Goods+Modern+Bakery/data=!4m2!3m1!1s0x340401004f31183b:0x8a03d134cb7ddceb","category":"ベーカリー","area":"中環・上環","memo":"","sig":"パンダンロール・名物「Eggies」","pitch":"Paul Lafayet共同創業者の新ベーカリー。人気ブランチ店","photo":{"src":"img/ac9b1b307a.jpg","store":false,"author":"Agelaia","license":"CC BY 4.0","page":"https://commons.wikimedia.org/wiki/File:Sourdough_Bread_Loaf.jpg"}},{"id":"0x340400ed8fbc2f3d:0x8b661f7a72d221f2","title":"Chee Kei","url":"https://www.google.com/maps/place/Chee+Kei/data=!4m2!3m1!1s0x340400ed8fbc2f3d:0x8b661f7a72d221f2","category":"麺・粥","area":"その他","memo":"","sig":"エビワンタン麺","pitch":"1994年銅鑼湾創業、竹昇麺と大ぶりワンタンの人気店","photo":{"src":"img/8bea7e0d92.jpg","store":false,"author":"cattan2011","license":"CC BY 2.0","page":"https://commons.wikimedia.org/wiki/File:Wonton_noodle-_Sai_Yung_Kee,_Hong_Kong.jpg"}},{"id":"0x340400f27ce49ab5:0xa81d2529d4e15a45","title":"Shek Kee Wonton Noodles","url":"https://www.google.com/maps/place/Shek+Kee+Wonton+Noodles/data=!4m2!3m1!1s0x340400f27ce49ab5:0xa81d2529d4e15a45","category":"麺・粥","area":"尖沙咀","memo":"","sig":"エビワンタン麺","pitch":"エビ7割のプリプリワンタンと竹昇麺が安くて旨い","photo":{"src":"img/8bea7e0d92.jpg","store":false,"author":"cattan2011","license":"CC BY 2.0","page":"https://commons.wikimedia.org/wiki/File:Wonton_noodle-_Sai_Yung_Kee,_Hong_Kong.jpg"}},{"id":"0x34040183e2826ecd:0x8f63f78d4eddbe39","title":"Auntie Sweet (Yiu Wa Street)","url":"https://www.google.com/maps/place/Auntie+Sweet+(Yiu+Wa+Street)/data=!4m2!3m1!1s0x34040183e2826ecd:0x8f63f78d4eddbe39","category":"スイーツ","area":"湾仔・銅鑼湾","memo":"","sig":"マンゴーデザート「芒果交響曲」","pitch":"銅鑼湾の人気甘味処。マンゴー系の糖水・かき氷が名物","photo":{"src":"img/f4340686e5.jpg","store":false,"author":"Thomas.Lu","license":"CC BY 3.0","page":"https://commons.wikimedia.org/wiki/File:MangoPomeloSago_1.jpg"}},{"id":"0x340401d127d41127:0xc28cddc21279bd27","title":"Kitchen One Roast Goose (Causeway Bay)","url":"https://www.google.com/maps/place/Kitchen+One+Roast+Goose+(Causeway+Bay)/data=!4m2!3m1!1s0x340401d127d41127:0xc28cddc21279bd27","category":"焼味・煲仔飯","area":"湾仔・銅鑼湾","memo":"","sig":"ローストグース飯","pitch":"皮パリ身厚のローストグースが評判の焼味店。テイクアウトも人気","photo":{"src":"img/7006a5b849.jpg","store":false,"author":"Ceeseven","license":"CC BY-SA 4.0","page":"https://commons.wikimedia.org/wiki/File:Roast_Goose_Rice_with_Plum_Sauce.jpg"}},{"id":"0x3404011004b5d7df:0x75c1ee6aa36211b","title":"DimSumHere","url":"https://www.google.com/maps/place/DimSumHere/data=!4m2!3m1!1s0x3404011004b5d7df:0x75c1ee6aa36211b","category":"飲茶・点心","area":"佐敦・油麻地","memo":"","sig":"カスタード饅頭・海老餃子","pitch":"廟街の人気点心店。流沙包や黒トリュフ海老餃子が手頃に味わえる","photo":{"src":"img/81c1ac7c9f.jpg","store":false,"author":"ZhengZhou","license":"CC BY-SA 4.0","page":"https://commons.wikimedia.org/wiki/File:Ha_Gow_(Cantonese_Shrimp_Dumplings).jpeg"}},{"id":"0x340401b67badfe13:0xeffc40def478c291","title":"Hashtag B (Tsim Sha Tsui)","url":"https://www.google.com/maps/place/Hashtag+B+(Tsim+Sha+Tsui)/data=!4m2!3m1!1s0x340401b67badfe13:0xeffc40def478c291","category":"ベーカリー","area":"尖沙咀","memo":"","sig":"ナポレオン・エッグタルト","pitch":"2022年創業の人気ベーカリー。花形パイ生地のサクサクエッグタルト","photo":{"src":"img/de4d8ceabb.jpg","store":false,"author":"chinnian","license":"CC BY-SA 2.0","page":"https://commons.wikimedia.org/wiki/File:Hong_Kong_Sweet_Dynasty_egg_tarts.jpg"}},{"id":"0x34040113fd898029:0x25c973be4deaaca6","title":"Yuan Ji Dumpling","url":"https://www.google.com/maps/place/Yuan+Ji+Dumpling/data=!4m2!3m1!1s0x34040113fd898029:0x25c973be4deaaca6","category":"麺・粥","area":"その他","memo":"","sig":"海老ワンタン・水餃子","pitch":"広州発の餃子・雲呑チェーン袁記雲餃。具だくさんの海老ワンタン","photo":{"src":"img/10da1184c9.jpg","store":false,"author":"Banej","license":"CC BY-SA 3.0","page":"https://commons.wikimedia.org/wiki/File:Jiaozi_with_Pork_%26_Chive_by_Banej.jpg"}},{"id":"0x34040050abab64b7:0x8fce6ed9f53b92af","title":"Keung Kee","url":"https://www.google.com/maps/place/Keung+Kee/data=!4m2!3m1!1s0x34040050abab64b7:0x8fce6ed9f53b92af","category":"レストラン","area":"深水埗","memo":"","sig":"海南チキン・海鮮炒め","pitch":"鴨寮街そばの大排檔。強火の鍋で炒める海鮮と海南チキンが名物","photo":{"src":"img/9b93f72f9a.jpg","store":false,"author":"ZhengZhou","license":"CC BY-SA 4.0","page":"https://commons.wikimedia.org/wiki/File:Causeway_Bay_Typhoon_Shelter_Crab.jpg"}},{"id":"0x340401ac256fd835:0x13cb88302c8fbf05","title":"Nove at Galleria","url":"https://www.google.com/maps/place/Nove+at+Galleria/data=!4m2!3m1!1s0x340401ac256fd835:0x13cb88302c8fbf05","category":"飲茶・点心","area":"中環・上環","memo":"","sig":"モダン点心・北京ダック","pitch":"ウンベルト・ボンバナ監修のモダン点心ラウンジ。茶カクテルも","photo":{"src":"img/81c1ac7c9f.jpg","store":false,"author":"ZhengZhou","license":"CC BY-SA 4.0","page":"https://commons.wikimedia.org/wiki/File:Ha_Gow_(Cantonese_Shrimp_Dumplings).jpeg"}},{"id":"0x34040100725033d1:0xa79df24056d965f0","title":"FAT J Char Siu","url":"https://www.google.com/maps/place/FAT+J+Char+Siu/data=!4m2!3m1!1s0x34040100725033d1:0xa79df24056d965f0","category":"焼味・煲仔飯","area":"湾仔・銅鑼湾","memo":"","sig":"豚バラ叉焼","pitch":"Flower Drum姉妹店。脂の乗った豚バラ叉焼に行列ができる焼味店","photo":{"src":"img/7a96bf0f7b.jpg","store":false,"author":"Ceeseven","license":"CC BY-SA 4.0","page":"https://commons.wikimedia.org/wiki/File:Char_Siu_%26_Fried_Egg_with_Rice.jpg"}},{"id":"0x3404012980f0494f:0x1ce3978a6d4187be","title":"The Baker \u0026 The Bottleman","url":"https://www.google.com/maps/place/The+Baker+%26+The+Bottleman/data=!4m2!3m1!1s0x3404012980f0494f:0x1ce3978a6d4187be","category":"ベーカリー","area":"湾仔・銅鑼湾","memo":"","sig":"ソーダブレッド・スコーン","pitch":"サイモン・ローガンのベーカリー＆自然派ワインバー。英国系焼き菓子","photo":{"src":"img/ac9b1b307a.jpg","store":false,"author":"Agelaia","license":"CC BY 4.0","page":"https://commons.wikimedia.org/wiki/File:Sourdough_Bread_Loaf.jpg"}},{"id":"0x34040116d0cb0b31:0x7634774cf5fe63f5","title":"Chukfo Taipan Restaurant","url":"https://www.google.com/maps/place/Chukfo+Taipan+Restaurant/data=!4m2!3m1!1s0x34040116d0cb0b31:0x7634774cf5fe63f5","category":"焼味・煲仔飯","area":"湾仔・銅鑼湾","memo":"","sig":"ローストグース・叉焼目玉焼き飯","pitch":"湾仔の市場脇にある地元客中心の焼味店。叉焼＋目玉焼き飯が人気","photo":{"src":"img/7006a5b849.jpg","store":false,"author":"Ceeseven","license":"CC BY-SA 4.0","page":"https://commons.wikimedia.org/wiki/File:Roast_Goose_Rice_with_Plum_Sauce.jpg"}},{"id":"0x34040056e7d18dc1:0xe5511393d1ce1d16","title":"Yee Shun Milk Company","url":"https://www.google.com/maps/place/Yee+Shun+Milk+Company/data=!4m2!3m1!1s0x34040056e7d18dc1:0xe5511393d1ce1d16","category":"スイーツ","area":"佐敦・油麻地","memo":"","sig":"双皮奶（ミルクプリン）","pitch":"マカオ発祥の老舗牛乳店。濃厚な双皮奶と生姜ミルクプリンが名物","photo":{"src":"img/f34273700c.jpg","store":true,"author":"Smuconlaw.","license":"CC BY-SA 4.0","page":"https://commons.wikimedia.org/wiki/File:Milk_pudding_from_Yee_Shun_Milk_Company,_Hong_Kong_-_20111215.jpg"}},{"id":"0x340401e7987c17bf:0xd0e3a52a2a60864a","title":"Lau Sum Kee Noodle (Fuk Wing Street)","url":"https://www.google.com/maps/place/Lau+Sum+Kee+Noodle+(Fuk+Wing+Street)/data=!4m2!3m1!1s0x340401e7987c17bf:0xd0e3a52a2a60864a","category":"麺・粥","area":"深水埗","memo":"","sig":"竹昇麺の海老子撈麺","pitch":"ミシュラン・ビブグルマン常連。竹で打つコシの強い麺とエビワンタン","photo":{"src":"img/d3fb82fe99.jpg","store":false,"author":"Peachyeung316","license":"CC BY-SA 4.0","page":"https://commons.wikimedia.org/wiki/File:A_Lo_mein_with_shrimp_roe_at_Ho_To_Tai_Chinese_Noodle_Shop.jpg"}},{"id":"0x340401005b79f871:0x12b3ef6f573352fd","title":"Susantianmi 蘇三甜蜜","url":"https://www.google.com/maps/place/Susantianmi+%E8%98%87%E4%B8%89%E7%94%9C%E8%9C%9C/data=!4m2!3m1!1s0x340401005b79f871:0x12b3ef6f573352fd","category":"スイーツ","area":"湾仔・銅鑼湾","memo":"","sig":"茅台チョコプリン","pitch":"レトロな内装の創作デザート店。茅台酒入りチョコプリンが看板","photo":{"src":"img/703458074d.jpg","store":false,"author":"Ginny","license":"CC BY-SA 2.0","page":"https://commons.wikimedia.org/wiki/File:Chocolate_pudding_in_glasses.jpg"}},{"id":"0x340401002f3cb777:0x8370d6550569649e","title":"Lin Heung Lau","url":"https://www.google.com/maps/place/Lin+Heung+Lau/data=!4m2!3m1!1s0x340401002f3cb777:0x8370d6550569649e","category":"飲茶・点心","area":"中環・上環","memo":"","sig":"ワゴン式飲茶","pitch":"創業100年超の老舗茶楼。名物の点心ワゴンを上環の新店舗で継承","photo":{"src":"img/c53ef54f34.jpg","store":true,"author":"Xuthoria","license":"CC BY-SA 4.0","page":"https://commons.wikimedia.org/wiki/File:Hong_Kong_2026_-_Lin_Heung_Lau_01.jpg"}},{"id":"0x13ff465cfe3b1415:0xeed851ac7ed49514","title":"Kai Kai Dessert","url":"https://www.google.com/maps/place/Kai+Kai+Dessert/data=!4m2!3m1!1s0x13ff465cfe3b1415:0xeed851ac7ed49514","category":"スイーツ","area":"佐敦・油麻地","memo":"","sig":"黒ごま汁粉・腐竹糖水","pitch":"ミシュラン・ビブグルマン常連の老舗糖水店。黒ごまペーストが名物","photo":{"src":"img/2786c4f650.jpg","store":false,"author":"2225Group8","license":"CC BY-SA 3.0","page":"https://commons.wikimedia.org/wiki/File:Chinese_tongsui_-_Sesame_paste.jpg"}},{"id":"0x3404072b31739fbb:0xabd3b2b0534598d5","title":"TEI MOU KOON Dessert","url":"https://www.google.com/maps/place/TEI+MOU+KOON+Dessert/data=!4m2!3m1!1s0x3404072b31739fbb:0xabd3b2b0534598d5","category":"スイーツ","area":"その他","memo":"","sig":"杏仁茶・マンゴー豆腐花","pitch":"九龍城の老舗糖水店。桃膠入り杏仁茶やマンゴー系甜品が人気","photo":{"src":"img/2786c4f650.jpg","store":false,"author":"2225Group8","license":"CC BY-SA 3.0","page":"https://commons.wikimedia.org/wiki/File:Chinese_tongsui_-_Sesame_paste.jpg"}},{"id":"0x3403ff840c98d2bd:0x3c038500c391ae65","title":"Po Kee BBQ Restaurant","url":"https://www.google.com/maps/place/Po+Kee+BBQ+Restaurant/data=!4m2!3m1!1s0x3403ff840c98d2bd:0x3c038500c391ae65","category":"焼味・煲仔飯","area":"その他","memo":"","sig":"叉焼・ローストグース","pitch":"40年以上続くビブグルマン焼味店。開店前から行列、叉焼は早く売切","photo":{"src":"img/7a96bf0f7b.jpg","store":false,"author":"Ceeseven","license":"CC BY-SA 4.0","page":"https://commons.wikimedia.org/wiki/File:Char_Siu_%26_Fried_Egg_with_Rice.jpg"}},{"id":"0x3403ff8735933a27:0xbc454434a051a6c0","title":"Ying Kee Noodle","url":"https://www.google.com/maps/place/Ying+Kee+Noodle/data=!4m2!3m1!1s0x3403ff8735933a27:0xbc454434a051a6c0","category":"麺・粥","area":"その他","memo":"","sig":"牛バラ麺","pitch":"1994年創業のビブグルマン麺店。一晩煮込んだ牛バラと自家製叉焼","photo":{"src":"img/e63739fbd2.jpg","store":false,"author":"User:SHOLYWOD","license":"CC BY-SA 3.0","page":"https://commons.wikimedia.org/wiki/File:HK_Food_Brisket_Noodle_1.JPG"}},{"id":"0x3403ff80972f7f3b:0x7fa82fb56f2deb59","title":"Kwan Kee Claypot Rice","url":"https://www.google.com/maps/place/Kwan+Kee+Claypot+Rice/data=!4m2!3m1!1s0x3403ff80972f7f3b:0x7fa82fb56f2deb59","category":"焼味・煲仔飯","area":"その他","memo":"","sig":"白鱔（ウナギ）煲仔飯","pitch":"ビブグルマン掲載の煲仔飯店。おこげ完璧な夜限定の土鍋ご飯","photo":{"src":"img/81572cae30.jpg","store":false,"author":"Ceeseven","license":"CC BY-SA 4.0","page":"https://commons.wikimedia.org/wiki/File:Spare_Rib_%26_Chicken_Feet_Claypot_Rice.jpg"}},{"id":"0x340400f273c7204d:0x764cd6ee7223851f","title":"南海一號 Nanhai No.1","url":"https://www.google.com/maps/place/%E5%8D%97%E6%B5%B7%E4%B8%80%E8%99%9F+Nanhai+No.1/data=!4m2!3m1!1s0x340400f273c7204d:0x764cd6ee7223851f","category":"レストラン","area":"尖沙咀","memo":"","sig":"ハタ浮袋と筍の煮込み","pitch":"iSQUARE30階のハーバービュー広東料理。ミシュラン星獲得歴あり","photo":{"src":"img/ea9539c658.jpg","store":false,"author":"Unknown author","license":"CC BY-SA 2.5","page":"https://commons.wikimedia.org/wiki/File:HK_food_Crispy_Deep_Fried_Chicken.JPG"}},{"id":"0x340400eb0a91a071:0x31844143495496c","title":"Mak Man Kee Noodle Shop(Jordan)","url":"https://www.google.com/maps/place/Mak+Man+Kee+Noodle+Shop(Jordan)/data=!4m2!3m1!1s0x340400eb0a91a071:0x31844143495496c","category":"麺・粥","area":"佐敦・油麻地","memo":"","sig":"エビワンタン麺","pitch":"ミシュラン・ビブグルマン掲載の老舗。細麺とプリプリのエビワンタン","photo":{"src":"img/8bea7e0d92.jpg","store":false,"author":"cattan2011","license":"CC BY 2.0","page":"https://commons.wikimedia.org/wiki/File:Wonton_noodle-_Sai_Yung_Kee,_Hong_Kong.jpg"}},{"id":"0x340401b5c2170405:0xf069610b22f25eb8","title":"Bakehouse","url":"https://www.google.com/maps/place/Bakehouse/data=!4m2!3m1!1s0x340401b5c2170405:0xf069610b22f25eb8","category":"ベーカリー","area":"尖沙咀","memo":"","sig":"サワードウ・エッグタルト","pitch":"グレゴワール・ミショー氏のベーカリー。行列必至のサワードウエッグタルト","photo":{"src":"img/de4d8ceabb.jpg","store":false,"author":"chinnian","license":"CC BY-SA 2.0","page":"https://commons.wikimedia.org/wiki/File:Hong_Kong_Sweet_Dynasty_egg_tarts.jpg"}},{"id":"0x34040165b08f2cab:0x4f2e798736709b13","title":"Bar Leone","url":"https://www.google.com/maps/place/Bar+Leone/data=!4m2!3m1!1s0x34040165b08f2cab:0x4f2e798736709b13","category":"バー","area":"中環・上環","memo":"","sig":"ネグローニ","pitch":"World\u0027s 50 Best Bars 2025第1位・Asia\u0027s 50 Best 2年連続1位","photo":{"src":"img/85e5ef9dbf.jpg","store":false,"author":"Minderbinder","license":"CC BY-SA 3.0","page":"https://commons.wikimedia.org/wiki/File:Last_Word_cocktail_in_a_bar.JPG"}},{"id":"0x3404012fec1f4e67:0xd32acc571e3fef1f","title":"Samsen (Central)","url":"https://www.google.com/maps/place/Samsen+(Central)/data=!4m2!3m1!1s0x3404012fec1f4e67:0xd32acc571e3fef1f","category":"レストラン","area":"中環・上環","memo":"","sig":"和牛ボートヌードル","pitch":"人気タイ麺店の中環店。スパイス香る濃厚スープの和牛ボートヌードル","photo":{"src":"img/a072cd4c8b.jpg","store":false,"author":"Flickr user Alpha","license":"CC BY-SA 2.0","page":"https://commons.wikimedia.org/wiki/File:Boat_noodles.jpg"}},{"id":"0x3404010014bfdfc5:0x9bfd404a14fb645b","title":"Jus","url":"https://www.google.com/maps/place/Jus/data=!4m2!3m1!1s0x3404010014bfdfc5:0x9bfd404a14fb645b","category":"麺・粥","area":"中環・上環","memo":"","sig":"牛脂まぜ麺","pitch":"Big JJ姉妹店の小さな麺店。牛叉焼と牛タンをのせた牛脂まぜ麺","photo":{"src":"img/d3fb82fe99.jpg","store":false,"author":"Peachyeung316","license":"CC BY-SA 4.0","page":"https://commons.wikimedia.org/wiki/File:A_Lo_mein_with_shrimp_roe_at_Ho_To_Tai_Chinese_Noodle_Shop.jpg"}},{"id":"0x3404010014041a5d:0xc66b1f35ae3bae38","title":"睡飽氷店","url":"https://www.google.com/maps/place/%E7%9D%A1%E9%A3%BD%E6%B0%B7%E5%BA%97/data=!4m2!3m1!1s0x3404010014041a5d:0xc66b1f35ae3bae38","category":"スイーツ","area":"その他","memo":"","sig":"かき氷（推定）","pitch":"店舗情報を特定できず。店名から氷菓・かき氷店と推定","photo":{"src":"img/9b9b37425e.jpg","store":false,"author":"Cloudyskye","license":"CC BY-SA 3.0","page":"https://commons.wikimedia.org/wiki/File:Mango_shaved_ice.jpg"}}];
@@ -234,75 +309,82 @@ const EXPORT_DATE = "2026/11/04";
 
 const CATEGORIES = ["飲茶・点心","麺・粥","茶餐廳","焼味・煲仔飯","レストラン","スイーツ","カフェ","ベーカリー","バー","観光・買い物","未分類"];
 const CAT_COLOR = Object.fromEntries(CATEGORIES.map((c, i) => [c, `var(--series-${i + 1})`]));
-// 写真がない店は、メニュー板のようにカテゴリの一字を大きく出す
+// メニュー板のように、カテゴリの一字を大きく出す
 const CAT_CHAR = { "飲茶・点心":"点","麺・粥":"麺","茶餐廳":"茶","焼味・煲仔飯":"焼","レストラン":"食","スイーツ":"甜","カフェ":"珈","ベーカリー":"包","バー":"酒","観光・買い物":"遊","未分類":"他" };
-const ICON_STAR = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.6l2.55 5.2 5.7.83-4.13 4.02.98 5.68L12 16.65l-5.1 2.68.98-5.68L3.75 9.63l5.7-.83z"/></svg>`;
-const ICON_CHECK = `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.6"/><path d="M8.1 12.3l2.7 2.7 5.2-5.4"/></svg>`;
-const AREAS =["中環・上環","湾仔・銅鑼湾","尖沙咀","佐敦・油麻地","旺角・太子","深水埗","その他","未確認"];
+const AREAS = ["中環・上環","湾仔・銅鑼湾","尖沙咀","佐敦・油麻地","旺角・太子","深水埗","その他","未確認"];
 const DAYS = ["Day 1","Day 2","Day 3","Day 4","Day 5"];
 const STORE_KEY = "hkSpots.v1";
+
+const ICON_STAR = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.6l2.55 5.2 5.7.83-4.13 4.02.98 5.68L12 16.65l-5.1 2.68.98-5.68L3.75 9.63l5.7-.83z"/></svg>`;
+const ICON_WENT = `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.6"/><path d="M8.1 12.3l2.7 2.7 5.2-5.4"/></svg>`;
+const ICON_CHEV = `<svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>`;
 
 // ---- state (localStorage) ----
 let store = {};
 try { store = JSON.parse(localStorage.getItem(STORE_KEY) || "{}"); } catch (e) { store = {}; }
 const save = () => localStorage.setItem(STORE_KEY, JSON.stringify(store));
 const st = id => (store[id] ||= {});
+const BY_ID = Object.fromEntries(SPOTS.map(s => [s.id, s]));
 const spot = s => ({ ...s, ...(store[s.id] || {}) });
 const allSpots = () => SPOTS.map(spot);
 
 const filters = { cat: null, area: null, star: false, unvisited: false, q: "" };
-const openIds = new Set();
+const openIds = new Set(), mapIds = new Set(), stampIds = new Set();
 
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
-const opts = (list, cur, blank) => (blank ? `<option value="">${blank}</option>` : "") +
-  list.map(v => `<option value="${esc(v)}"${v === cur ? " selected" : ""}>${esc(v)}</option>`).join("");
+const opts = (list, cur) => list.map(v => `<option value="${esc(v)}"${v === cur ? " selected" : ""}>${esc(v)}</option>`).join("");
+const byPriority = (a, b) => (!!b.star - !!a.star) || (!!a.visited - !!b.visited) || (CATEGORIES.indexOf(a.category) - CATEGORIES.indexOf(b.category));
 
-const mapFrame = t => `<iframe class="map-frame" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="地図" src="https://maps.google.com/maps?q=${encodeURIComponent(t + " Hong Kong")}&hl=ja&z=16&output=embed"></iframe>`;
+const mapFrame = t => `<iframe class="map-frame" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="${esc(t)}の地図" src="https://maps.google.com/maps?q=${encodeURIComponent(t + " Hong Kong")}&hl=ja&z=16&output=embed"></iframe>`;
 
 function cardHTML(s) {
-  const open = openIds.has(s.id);
-  return `<div class="card${s.visited ? " visited" : ""}${open ? " open" : ""}" data-id="${s.id}" style="--cat:${CAT_COLOR[s.category] || CAT_COLOR["未分類"]}">
-    <div class="card-main" data-act="toggle">
-      <button class="icon-btn star${s.star ? " on" : ""}" data-act="star" aria-label="絶対行く" aria-pressed="${!!s.star}">${ICON_STAR}</button>
-      ${s.photo ? `<img class="thumb" loading="lazy" src="${esc(s.photo.src)}" alt="">` : `<div class="thumb tile serif" aria-hidden="true">${CAT_CHAR[s.category] || "他"}</div>`}
-      <div class="card-body">
-        <div class="card-title">${esc(s.title)}</div>
-        ${s.sig ? `<div class="sig">${esc(s.sig)}</div>` : ""}
-        <div class="meta">
-          <span class="cat">${esc(s.category)}</span>
-          <span>${esc(s.area === "未確認" ? "エリア未確認" : s.area)}</span>
-          ${s.day ? `<span class="day">${esc(s.day)}</span>` : ""}
-          ${s.memo ? `<span class="memo">メモ：${esc(s.memo)}</span>` : ""}
+  const open = openIds.has(s.id), map = mapIds.has(s.id), base = BY_ID[s.id];
+  const fixed = store[s.id] && ("category" in store[s.id] || "area" in store[s.id]);
+  return `<div class="card${open ? " open" : ""}" data-id="${s.id}" style="--cat:${CAT_COLOR[s.category] || CAT_COLOR["未分類"]}">
+    <div class="card-main">
+      <button class="row-hit" data-act="toggle" aria-expanded="${open}">
+        <span class="tile serif" aria-hidden="true">${CAT_CHAR[s.category] || "他"}${s.visited ? `<span class="seal${stampIds.has(s.id) ? " stamp" : ""}">行</span>` : ""}</span>
+        <span class="card-body">
+          <span class="card-title" style="display:block">${esc(s.title)}</span>
+          ${s.sig ? `<span class="sig" style="display:block">${esc(s.sig)}</span>` : ""}
+          <span class="meta">
+            <span class="cat">${esc(s.category)}</span>
+            <span>${esc(s.area === "未確認" ? "エリア未確認" : s.area)}</span>
+            ${s.visited ? `<span class="went">行った</span>` : ""}
+            ${s.day ? `<span class="day">${esc(s.day)}</span>` : ""}
+            ${s.memo ? `<span class="memo">メモ：${esc(s.memo)}</span>` : ""}
+          </span>
+        </span>
+        ${ICON_CHEV}
+      </button>
+      <button class="icon-btn star" data-act="star" aria-pressed="${!!s.star}" aria-label="★ ${esc(s.title)}">${ICON_STAR}</button>
+      <button class="icon-btn went" data-act="visited" aria-pressed="${!!s.visited}" aria-label="行った ${esc(s.title)}">${ICON_WENT}</button>
+    </div>
+    ${open ? `<div class="card-detail">
+      ${s.pitch ? `<p class="pitch">${esc(s.pitch)}</p>` : ""}
+      <a class="btn primary" href="${esc(s.url)}" target="_blank" rel="noopener">Googleマップで開く</a>
+      <div class="sub-actions">
+        <button class="btn ghost" data-act="map" aria-expanded="${map}">${map ? "地図を閉じる" : "ここで地図を見る"}</button>
+        <a class="btn ghost" href="https://www.google.com/search?tbm=isch&q=${encodeURIComponent(s.title.replace(/\s*[\(\[].*?[\)\]]/g, "") + " Hong Kong")}" target="_blank" rel="noopener">店の写真を見る</a>
+      </div>
+      ${map ? mapFrame(s.title) : ""}
+      <span class="label" id="dl-${s.id}">日程</span>
+      <div class="seg" role="group" aria-labelledby="dl-${s.id}">
+        ${["", ...DAYS].map(d => `<button data-act="day" data-v="${d}" aria-pressed="${(s.day || "") === d}">${d ? d.replace("Day ", "D") : "未定"}</button>`).join("")}
+      </div>
+      <label class="label" for="memo-${s.id}">メモ</label>
+      <input class="memo-in" id="memo-${s.id}" data-field="memo" value="${esc(s.memo)}" placeholder="例：朝イチ / 予約済み">
+      <details class="fix">
+        <summary>情報を直す（カテゴリ・エリア）</summary>
+        <div class="fix-grid">
+          <label for="c-${s.id}">カテゴリ</label><select id="c-${s.id}" data-field="category">${opts(CATEGORIES, s.category)}</select>
+          <label for="a-${s.id}">エリア</label><select id="a-${s.id}" data-field="area">${opts(AREAS, s.area)}</select>
         </div>
-      </div>
-      <button class="icon-btn check${s.visited ? " on" : ""}" data-act="visited" aria-label="行った" aria-pressed="${!!s.visited}">${ICON_CHECK}</button>
-    </div>
-    <div class="card-detail">
-      ${s.photo ? `<img class="photo-big" loading="lazy" src="${esc(s.photo.src)}" alt="${esc(s.sig)}">
-      <div class="credit">${s.photo.store ? "この店で撮影された写真" : "料理のイメージ写真（この店のものではありません）"}・
-        <a href="${esc(s.photo.page)}" target="_blank" rel="noopener">${esc(s.photo.author)} / ${esc(s.photo.license)}</a>, Wikimedia Commons</div>` : ""}
-      ${s.sig ? `<div class="pitch"><b>名物：</b>${esc(s.sig)}<br>${esc(s.pitch)}</div>` : ""}
-      <label class="field">日程<select data-field="day">${opts(DAYS, s.day, "未定")}</select></label>
-      <label class="field">カテゴリ<select data-field="category">${opts(CATEGORIES, s.category)}</select></label>
-      <label class="field">エリア<select data-field="area">${opts(AREAS, s.area)}</select></label>
-      <label class="field">メモ<input data-field="memo" value="${esc(s.memo)}" placeholder="例：朝イチ / 予約済み"></label>
-      <div class="map-wrap" data-q="${esc(s.title)}">${open ? mapFrame(s.title) : ""}</div>
-      <div class="actions">
-        <a class="btn primary" href="${esc(s.url)}" target="_blank" rel="noopener">Googleマップで開く</a>
-        <a class="btn ghost" href="https://www.google.com/search?tbm=isch&q=${encodeURIComponent(s.title.replace(/\s*[\(\[].*?[\)\]]/g, "") + " Hong Kong")}" target="_blank" rel="noopener">この店の写真を見る</a>
-      </div>
-    </div>
+        ${fixed ? `<button class="link-btn" data-act="unfix">元の分類（${esc(base.category)}・${esc(base.area)}）に戻す</button>` : ""}
+      </details>
+    </div>` : ""}
   </div>`;
 }
-
-function chips(el, list, key, counts) {
-  el.innerHTML = `<span class="chip${filters[key] === null ? " active" : ""}" data-v="">すべて <small>${counts.__all}</small></span>` +
-    list.filter(v => counts[v]).map(v => `<span class="chip${filters[key] === v ? " active" : ""}" data-v="${esc(v)}">` +
-      (key === "cat" ? `<span class="sw" style="background:${CAT_COLOR[v]}"></span>` : "") +
-      `${esc(v)} <small>${counts[v]}</small></span>`).join("");
-  el.querySelectorAll(".chip").forEach(c => c.onclick = () => { filters[key] = c.dataset.v || null; render(); });
-}
-
 const listHTML = rows => `<div class="list">${rows.map(cardHTML).join("")}</div>`;
 
 function countBy(list, f) {
@@ -311,110 +393,192 @@ function countBy(list, f) {
   return o;
 }
 
+// ---- 一覧 ----
+function matchesQuery(s, q) {
+  return !q || [s.title, s.memo, s.sig, s.pitch, s.area, s.category].some(t => (t || "").toLowerCase().includes(q));
+}
 function renderList(all) {
   const q = filters.q.trim().toLowerCase();
-  const base = all.filter(s => (!q || [s.title, s.memo, s.sig, s.pitch].some(t => (t || "").toLowerCase().includes(q)))
-    && (!filters.star || s.star) && (!filters.unvisited || !s.visited));
-  chips(document.getElementById("catChips"), CATEGORIES, "cat", countBy(base.filter(s => !filters.area || s.area === filters.area), s => s.category));
-  chips(document.getElementById("areaChips"), AREAS, "area", countBy(base.filter(s => !filters.cat || s.category === filters.cat), s => s.area));
-  const rows = base.filter(s => (!filters.cat || s.category === filters.cat) && (!filters.area || s.area === filters.area))
-    .sort((a, b) => (b.star - a.star) || (a.visited - b.visited) || (CATEGORIES.indexOf(a.category) - CATEGORIES.indexOf(b.category)));
+  const base = all.filter(s => matchesQuery(s, q) && (!filters.star || s.star) && (!filters.unvisited || !s.visited));
+  const rows = base.filter(s => (!filters.cat || s.category === filters.cat) && (!filters.area || s.area === filters.area)).sort(byPriority);
   document.getElementById("listCount").textContent = `${rows.length}件`;
   document.getElementById("listBody").innerHTML = rows.length ? listHTML(rows)
-    : `<div class="list"><div class="empty">この条件に合うスポットはありません。絞り込みを「すべて」に戻してみてください。</div></div>`;
-  document.getElementById("fStar").classList.toggle("active", filters.star);
-  document.getElementById("fUnvisited").classList.toggle("active", filters.unvisited);
+    : `<div class="list"><div class="empty">この条件に合うスポットはありません。<br><button class="chip" data-act="clearAll">検索と絞り込みを解除</button></div></div>`;
+  renderFilterUI(base);
 }
 
+function renderFilterUI(base) {
+  const n = [filters.cat, filters.area, filters.star, filters.unvisited].filter(Boolean).length;
+  const badge = document.getElementById("filterN");
+  badge.hidden = !n; badge.textContent = n;
+  const act = [];
+  if (filters.star) act.push(["star", "★だけ"]);
+  if (filters.unvisited) act.push(["unvisited", "まだ行ってない"]);
+  if (filters.cat) act.push(["cat", filters.cat]);
+  if (filters.area) act.push(["area", filters.area]);
+  document.getElementById("activeFilters").innerHTML = act.map(([k, l]) =>
+    `<button class="chip removable" data-rm="${k}" aria-label="${esc(l)} を外す">${esc(l)}</button>`).join("") +
+    (act.length > 1 ? `<button class="chip clear" data-act="clearAll">すべて解除</button>` : "");
+
+  const pressed = v => `aria-pressed="${!!v}"`;
+  document.getElementById("flagChips").innerHTML =
+    `<button class="chip" data-flag="star" ${pressed(filters.star)}>★だけ</button>` +
+    `<button class="chip" data-flag="unvisited" ${pressed(filters.unvisited)}>まだ行ってない</button>`;
+  const cc = countBy(base.filter(s => !filters.area || s.area === filters.area), s => s.category);
+  const ac = countBy(base.filter(s => !filters.cat || s.category === filters.cat), s => s.area);
+  document.getElementById("catChips").innerHTML = CATEGORIES.filter(c => cc[c] || filters.cat === c).map(c =>
+    `<button class="chip" data-cat="${esc(c)}" ${pressed(filters.cat === c)}><span class="sw" style="background:${CAT_COLOR[c]}"></span>${esc(c)} <small>${cc[c] || 0}</small></button>`).join("");
+  document.getElementById("areaChips").innerHTML = AREAS.filter(a => ac[a] || filters.area === a).map(a =>
+    `<button class="chip" data-area="${esc(a)}" ${pressed(filters.area === a)}>${esc(a)} <small>${ac[a] || 0}</small></button>`).join("");
+  const total = base.filter(s => (!filters.cat || s.category === filters.cat) && (!filters.area || s.area === filters.area)).length;
+  document.getElementById("closeFilter").textContent = `${total}件を見る`;
+}
+
+// ---- エリア別（路線図） ----
 function renderArea(all) {
-  const grid = document.getElementById("areaGrid"), body = document.getElementById("areaBody");
   const used = AREAS.filter(a => all.some(s => s.area === a));
-  grid.innerHTML = used.map(a => {
+  document.getElementById("route").innerHTML = used.map((a, i) => {
     const list = all.filter(s => s.area === a), v = list.filter(s => s.visited).length;
-    return `<li class="stop${list.length && v === list.length ? " done" : ""}" data-a="${esc(a)}" role="button" tabindex="0">
-      <span class="dot"></span><span class="nm">${esc(a)}</span>
-      <span class="ct"><b>${list.length}</b>件${v ? `・行った ${v}` : ""}</span></li>`;
+    return `<li class="stop${v === list.length ? " done" : ""}"><button data-goto="area-${i}">
+      <span class="dot" aria-hidden="true"></span><span class="nm">${esc(a)}</span>
+      <span class="ct"><b>${list.length}</b>件${v ? `・行った ${v}` : ""}</span></button></li>`;
   }).join("");
-  grid.querySelectorAll(".stop").forEach(t => t.onclick = () =>
-    document.getElementById("area-" + used.indexOf(t.dataset.a))?.scrollIntoView({ behavior: "smooth", block: "start" }));
-  body.innerHTML = used.map((a, i) => {
-    const list = all.filter(s => s.area === a).sort((x, y) => (y.star - x.star) || (CATEGORIES.indexOf(x.category) - CATEGORIES.indexOf(y.category)));
-    return `<section class="panel" id="area-${i}" style="scroll-margin-top:56px"><h2>${esc(a)} <small>${list.length}件</small></h2>${listHTML(list)}</section>`;
+  document.getElementById("areaBody").innerHTML = used.map((a, i) => {
+    const list = all.filter(s => s.area === a).sort(byPriority);
+    return `<section class="panel" id="area-${i}" style="scroll-margin-top:12px"><h2>${esc(a)} <small>${list.length}件</small>
+      <button class="up" data-goto="route">路線図に戻る</button></h2>${listHTML(list)}</section>`;
   }).join("");
 }
 
+// ---- 日別プラン ----
 function renderPlan(all) {
-  const groups = [...DAYS, ""];
-  document.getElementById("planBody").innerHTML = groups.map(d => {
-    const list = all.filter(s => (s.day || "") === d);
+  document.getElementById("planBody").innerHTML = [...DAYS, ""].map(d => {
+    const list = all.filter(s => (s.day || "") === d).sort(byPriority);
     if (!d) {
       const stars = list.filter(s => s.star);
-      return `<section class="panel"><h2>★を付けて日程未定 <small>${stars.length}件</small></h2>${stars.length ? listHTML(stars) : `<div class="list"><div class="empty">★を付けたスポットは、全部どこかの日に入っています。</div></div>`}</section>`;
+      return `<section class="panel"><h2>★付き・日程未定 <small>${stars.length}件</small></h2>${stars.length ? listHTML(stars) : `<p class="day-empty">★を付けたスポットは、全部どこかの日に入っています。</p>`}</section>`;
     }
     return `<section class="panel"><h2>${esc(d)} <small>${list.length}件</small></h2>${list.length ? listHTML(list) : `<p class="day-empty">まだ予定なし</p>`}</section>`;
   }).join("");
 }
 
-function renderKpis(all) {
-  const v = all.filter(s => s.visited).length;
+function renderTally(all) {
+  const n = f => all.filter(f).length;
   document.getElementById("tally").innerHTML =
-    `<span><b>${all.length}</b>スポット</span><span>行った<b style="margin-left:4px">${v}</b></span>` +
-    `<span>★<b style="margin-left:3px">${all.filter(s => s.star).length}</b></span><span>日程に入れた<b style="margin-left:4px">${all.filter(s => s.day).length}</b></span>`;
+    `<span><b>${all.length}</b>件</span><span>行った<b>${n(s => s.visited)}</b></span><span>★<b>${n(s => s.star)}</b></span><span>日程<b>${n(s => s.day)}</b></span>`;
 }
 
 function render() {
   const all = allSpots();
-  renderKpis(all);
-  renderList(all);
-  renderArea(all);
-  renderPlan(all);
+  renderTally(all); renderList(all); renderArea(all); renderPlan(all);
+  stampIds.clear();
+}
+
+// ★・行った は、押した行をその場で書き換えるだけ（指の下で並びが変わらないように）。並べ直しは次の絞り込み・タブ切り替え時。
+function patchCard(id) {
+  const s = spot(BY_ID[id]);
+  document.querySelectorAll(`.card[data-id="${CSS.escape(id)}"]`).forEach(c => {
+    const tmp = document.createElement("div"); tmp.innerHTML = cardHTML(s);
+    const fresh = tmp.firstElementChild;
+    c.querySelector(".row-hit").replaceWith(fresh.querySelector(".row-hit"));
+    c.querySelector(".star").setAttribute("aria-pressed", !!s.star);
+    c.querySelector(".went").setAttribute("aria-pressed", !!s.visited);
+  });
+  const all = allSpots();
+  renderTally(all);
+  stampIds.clear();
 }
 
 // ---- events (delegated) ----
 document.addEventListener("click", e => {
-  const card = e.target.closest(".card");
-  if (!card || e.target.closest(".card-detail")) return;
-  const id = card.dataset.id, act = e.target.closest("[data-act]")?.dataset.act;
-  if (act === "star") { st(id).star = !spot(SPOTS.find(s => s.id === id)).star; save(); render(); }
-  else if (act === "visited") { st(id).visited = !spot(SPOTS.find(s => s.id === id)).visited; save(); render(); }
+  const t = e.target;
+  const goto = t.closest("[data-goto]");
+  if (goto) { document.getElementById(goto.dataset.goto)?.scrollIntoView({ behavior: "smooth", block: "start" }); return; }
+  if (t.closest('[data-act="clearAll"]')) { clearFilters(); document.getElementById("search").value = ""; filters.q = ""; render(); return; }
+  const rm = t.closest("[data-rm]");
+  if (rm) { const k = rm.dataset.rm; filters[k] = (k === "cat" || k === "area") ? null : false; render(); return; }
+
+  const card = t.closest(".card");
+  const actEl = t.closest("[data-act]");
+  if (!card || !actEl) return;
+  const id = card.dataset.id, act = actEl.dataset.act, s = spot(BY_ID[id]);
+  if (act === "star") { st(id).star = !s.star; save(); patchCard(id); }
+  else if (act === "visited") { st(id).visited = !s.visited; if (!s.visited) stampIds.add(id); save(); patchCard(id); }
   else if (act === "toggle") {
-    openIds.has(id) ? openIds.delete(id) : openIds.add(id);
-    document.querySelectorAll(`.card[data-id="${id}"]`).forEach(c => {
-      const isOpen = openIds.has(id);
-      c.classList.toggle("open", isOpen);
-      const w = c.querySelector(".map-wrap");
-      if (w) w.innerHTML = isOpen ? mapFrame(w.dataset.q) : "";
-    });
+    openIds.has(id) ? (openIds.delete(id), mapIds.delete(id)) : openIds.add(id);
+    rerenderCard(id);
   }
+  else if (act === "map") { mapIds.has(id) ? mapIds.delete(id) : mapIds.add(id); rerenderCard(id); }
+  else if (act === "day") { st(id).day = actEl.dataset.v; save(); rerenderCard(id); renderTally(allSpots()); planDirty = true; }
+  else if (act === "unfix") { delete st(id).category; delete st(id).area; save(); render(); }
 });
+function rerenderCard(id) {
+  const s = spot(BY_ID[id]);
+  document.querySelectorAll(`.card[data-id="${CSS.escape(id)}"]`).forEach(c => { c.outerHTML = cardHTML(s); });
+}
+let planDirty = false;
 document.addEventListener("change", e => {
   const f = e.target.dataset.field, card = e.target.closest(".card");
   if (!f || !card) return;
-  st(card.dataset.id)[f] = e.target.value; save(); render();
+  st(card.dataset.id)[f] = e.target.value; save();
+  if (f === "memo") { rerenderCard(card.dataset.id); } else { render(); }
 });
+
+// ---- 検索・絞り込み ----
 document.getElementById("search").addEventListener("input", e => { filters.q = e.target.value; renderList(allSpots()); });
-document.getElementById("fStar").onclick = () => { filters.star = !filters.star; render(); };
-document.getElementById("fUnvisited").onclick = () => { filters.unvisited = !filters.unvisited; render(); };
+const sheet = document.getElementById("filterSheet");
+document.getElementById("openFilter").onclick = () => sheet.showModal();
+document.getElementById("closeFilter").onclick = () => sheet.close();
+sheet.addEventListener("click", e => {
+  if (e.target === sheet) { sheet.close(); return; }
+  const b = e.target.closest("button"); if (!b) return;
+  if (b.dataset.flag) filters[b.dataset.flag] = !filters[b.dataset.flag];
+  else if (b.dataset.cat) filters.cat = filters.cat === b.dataset.cat ? null : b.dataset.cat;
+  else if (b.dataset.area) filters.area = filters.area === b.dataset.area ? null : b.dataset.area;
+  else if (b.id === "clearFilter") clearFilters();
+  else return;
+  renderList(allSpots());
+});
+sheet.addEventListener("close", () => { render(); window.scrollTo({ top: 0 }); });
+function clearFilters() { Object.assign(filters, { cat: null, area: null, star: false, unvisited: false }); }
+
+// ---- 保存内容 ----
+document.getElementById("exportBtn").onclick = async () => {
+  const text = JSON.stringify(store);
+  try { await navigator.clipboard.writeText(text); alert("保存内容をコピーしました。メモアプリなどに貼り付けて取っておいてください。"); }
+  catch (e) { prompt("この文字列をコピーして取っておいてください。", text); }
+};
+document.getElementById("importBtn").onclick = () => {
+  const text = prompt("「保存内容をコピー」で控えた文字列を貼り付けてください。今の内容は上書きされます。");
+  if (!text) return;
+  try { const v = JSON.parse(text); if (typeof v !== "object" || !v) throw 0; store = v; save(); render(); alert("戻しました。"); }
+  catch (e) { alert("読み込めませんでした。コピーした文字列をそのまま全部貼り付けてください。"); }
+};
 document.getElementById("resetBtn").onclick = () => {
-  if (confirm("★・行った・日程・メモ・修正内容をすべて消します。よろしいですか？")) { store = {}; save(); render(); }
+  if (confirm("★・行った・日程・メモ・修正内容をすべて消します。先に「保存内容をコピー」で控えを取ることもできます。消しますか？")) { store = {}; save(); render(); }
 };
 
 // ---- tabs ----
-document.querySelectorAll(".page-tab").forEach(btn => {
-  btn.addEventListener("click", () => {
-    document.querySelectorAll(".page-tab").forEach(b => b.classList.toggle("active", b === btn));
-    document.querySelectorAll(".page").forEach(p => p.classList.toggle("active", p.id === "page-" + btn.dataset.page));
-    window.scrollTo({ top: 0 });
-  });
+function showTab(page) {
+  document.querySelectorAll(".tab").forEach(b => b.setAttribute("aria-selected", b.dataset.page === page));
+  document.querySelectorAll(".page").forEach(p => p.classList.toggle("active", p.id === "page-" + page));
+  render();
+  window.scrollTo({ top: 0 });
+}
+document.querySelectorAll(".tab").forEach(b => b.addEventListener("click", () => showTab(b.dataset.page)));
+// role="tab" のキーボード操作（左右キー）
+document.querySelector(".tabbar-in").addEventListener("keydown", e => {
+  if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+  const tabs = [...document.querySelectorAll(".tab")], i = tabs.indexOf(document.activeElement);
+  const next = tabs[(i + (e.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length];
+  next.focus(); showTab(next.dataset.page);
 });
-// URL の #area / #plan で最初に開くタブを選べる
-document.querySelector(`.page-tab[data-page="${location.hash.slice(1)}"]`)?.click();
 
 // ---- theme ----
 const themeBtn = document.getElementById("themeToggle");
 function applyTheme(t) {
   document.documentElement.setAttribute("data-theme", t);
-  themeBtn.textContent = t === "dark" ? "ライト" : "ダーク";
+  themeBtn.setAttribute("aria-pressed", t === "dark");
   document.querySelector('meta[name="theme-color"]').content = t === "dark" ? "#0b3b2d" : "#0e5a43";
 }
 applyTheme(localStorage.getItem("hkSpots.theme") || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"));
@@ -423,13 +587,11 @@ themeBtn.addEventListener("click", () => {
   localStorage.setItem("hkSpots.theme", next); applyTheme(next);
 });
 
-// role="button" にした要素は Enter / Space でも押せるように
-document.addEventListener("keydown", e => {
-  if ((e.key === "Enter" || e.key === " ") && e.target.matches('[role="button"]')) { e.preventDefault(); e.target.click(); }
-});
 document.getElementById("noteCount").textContent = SPOTS.length;
 document.getElementById("noteDate").textContent = EXPORT_DATE;
 render();
+// URL の #area / #plan で最初に開くタブを選べる
+if (["area", "plan"].includes(location.hash.slice(1))) showTab(location.hash.slice(1));
 </script>
 </body>
 </html>
