@@ -9,6 +9,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0e5a43">
+<script>
+  // 夜の起動で一瞬明るく光らないよう、本体より先にテーマだけ決める
+  try { var p = localStorage.getItem("hkSpots.theme"); document.documentElement.setAttribute("data-theme", p || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")); } catch (e) {}
+</script>
 <style>
   /* 世界観：茶餐廳。借りるのは 書体（明朝の大字）・配色（翡翠緑の看板／ミントの壁タイル／朱）・
      メニュー板の漢字タイル・路線図・朱の印 だけ。操作部品は標準のまま。 */
@@ -21,6 +25,8 @@
     --ink-3:      #5d6a62;
     --hairline:   #d9e1db;
     --line:       rgba(24,32,27,0.13);
+    --list-line:  rgba(24,32,27,0.22);
+    --sel-fill:   #18201b;
     --jade:       #0e5a43;
     --jade-ink:   #0e5a43;
     --plate-ink:  #f3f6f1;
@@ -31,7 +37,7 @@
     --sel:        rgba(14,90,67,0.20);
     --shadow:     0 -1px 0 rgba(24,32,27,0.08), 0 -6px 18px rgba(24,32,27,0.06);
     /* カテゴリ色（白抜きの大字が読める濃さ・両テーマ共通） */
-    --series-1: #c23a22; --series-2: #b8541c; --series-3: #8f6300; --series-4: #7d4526;
+    --series-1: #7a2e4a; --series-2: #a65f0f; --series-3: #6f6a12; --series-4: #7d4526;
     --series-5: #4a3aa7; --series-6: #b23f72; --series-7: #12795a; --series-8: #84592b;
     --series-9: #2463ad; --series-10: #2f6f1f; --series-11: #66705f;
   }
@@ -44,6 +50,8 @@
     --ink-3:      #9aa89f;
     --hairline:   #26302a;
     --line:       rgba(237,242,238,0.13);
+    --list-line:  rgba(237,242,238,0.16);
+    --sel-fill:   #2c5a48;
     --jade:       #0b3b2d;
     --jade-ink:   #5fbf98;
     --plate-ink:  #edf2ee;
@@ -93,7 +101,7 @@
     background: var(--surface); box-shadow: var(--shadow); padding-bottom: env(safe-area-inset-bottom);
   }
   .tabbar-in { display: flex; width: 100%; max-width: 760px; }
-  .tab { flex: 1; background: none; border: none; padding: 8px 4px 10px; min-height: 56px; cursor: pointer; color: var(--ink-3); display: grid; justify-items: center; gap: 2px; font-size: 11.5px; font-weight: 600; }
+  .tab { flex: 1; background: none; border: none; padding: 8px 4px 10px; min-height: 56px; cursor: pointer; color: var(--ink-3); display: grid; justify-items: center; gap: 2px; font-size: 12px; font-weight: 600; }
   .tab svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
   .tab[aria-selected="true"] { color: var(--jade-ink); }
 
@@ -125,9 +133,9 @@
   .chip small { color: var(--ink-3); font-size: 12px; }
   .chip[aria-pressed="true"] { background: var(--ink); color: var(--ground); border-color: var(--ink); font-weight: 600; }
   .chip[aria-pressed="true"] small { color: inherit; opacity: .7; }
-  .chip.removable { min-height: 34px; background: var(--ink); color: var(--ground); border-color: var(--ink); font-size: 13px; font-weight: 600; }
+  .chip.removable { min-height: 40px; background: var(--ink); color: var(--ground); border-color: var(--ink); font-size: 13px; font-weight: 600; }
   .chip.removable::after { content: "×"; font-weight: 400; margin-left: 2px; }
-  .chip.clear { min-height: 34px; background: none; border-style: dashed; font-size: 13px; }
+  .chip.clear { min-height: 40px; background: none; border-style: dashed; font-size: 13px; }
 
   /* ---- 絞り込みシート ---- */
   dialog.sheet {
@@ -140,6 +148,7 @@
   .sheet-in { max-width: 760px; margin: 0 auto; padding-bottom: env(safe-area-inset-bottom); }
   .sheet-grab { width: 40px; height: 5px; border-radius: 3px; background: var(--hairline); margin: 0 auto 10px; }
   .sheet h3 { font-size: 13px; color: var(--ink-3); margin: 14px 0 8px; font-weight: 600; }
+  .sheet h3 small { font-weight: 500; }
   .sheet .chips { display: flex; flex-wrap: wrap; gap: 6px; }
   .sheet-foot { display: grid; grid-template-columns: auto 1fr; gap: 8px; margin-top: 18px; position: sticky; bottom: 0; background: var(--surface); padding-top: 8px; }
 
@@ -183,8 +192,9 @@
   .list-hint { font-size: 12.5px; color: var(--ink-3); margin: -4px 0 4px; }
 
   /* ---- 一覧：メニュー板のように、漢字タイルと店名を並べる ---- */
-  .list { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+  .list { background: var(--surface); border: 1px solid var(--list-line); border-radius: 14px; overflow: hidden; }
   .card + .card { border-top: 1px solid var(--hairline); }
+  .card { scroll-margin-top: 76px; scroll-margin-bottom: 76px; }
   .card-main { display: flex; align-items: center; padding: 0 4px 0 0; }
   .row-hit { flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; padding: 11px 6px 11px 12px; background: none; border: none; text-align: left; cursor: pointer; }
   .card.open .card-main { background: color-mix(in srgb, var(--ground) 50%, var(--surface)); }
@@ -203,7 +213,7 @@
   .card-body { flex: 1; min-width: 0; }
   .card-title { font-size: 15.5px; font-weight: 600; line-height: 1.3; word-break: break-word; }
   .sig { font-size: 13px; color: var(--ink-2); margin-top: 2px; line-height: 1.4; text-wrap: pretty; }
-  .meta { font-size: 12px; color: var(--ink-3); margin-top: 4px; display: flex; gap: 2px 10px; flex-wrap: wrap; align-items: center; }
+  .meta { font-size: 13px; color: var(--ink-3); margin-top: 4px; display: flex; gap: 2px 10px; flex-wrap: wrap; align-items: center; }
   .meta .cat { display: inline-flex; align-items: center; gap: 5px; color: var(--ink-2); }
   .meta .cat::before { content: ""; width: 8px; height: 8px; border-radius: 2px; background: var(--cat); }
   .meta .day { color: var(--jade-ink); font-weight: 700; }
@@ -224,7 +234,12 @@
   .pitch { font-size: 14px; line-height: 1.7; margin: 4px 0 0; max-width: 38em; text-wrap: pretty; color: var(--ink-2); }
   .btn { display: flex; align-items: center; justify-content: center; gap: 6px; text-align: center; min-height: 46px; padding: 8px 10px; border-radius: 11px; font-weight: 600; font-size: 14px; line-height: 1.3; text-decoration: none; cursor: pointer; border: 1px solid transparent; }
   .btn.primary { background: var(--vermilion-fill); color: #fff; margin-top: 12px; }
-  .card-detail .sub-actions { margin-top: 14px; }
+  .more-row { display: flex; align-items: center; gap: 4px 18px; flex-wrap: wrap; margin-top: 14px; }
+  .more-row .btn.ghost { flex: 0 0 auto; padding: 8px 16px; }
+  .text-link { color: var(--jade-ink); font-size: 14px; font-weight: 600; text-underline-offset: 3px; min-height: 44px; display: inline-flex; align-items: center; }
+  .toast { position: fixed; left: 50%; bottom: calc(76px + env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 30; background: var(--surface); color: var(--ink); border: 2px solid var(--vermilion); border-radius: 999px; padding: 8px 18px; font-size: 15px; font-weight: 700; box-shadow: 0 6px 20px rgba(0,0,0,.18); pointer-events: none; animation: toast 1.8s ease-out forwards; }
+  .toast b { color: var(--vermilion); font-size: 18px; margin-right: 4px; }
+  @keyframes toast { 0% { opacity: 0; transform: translate(-50%, 8px); } 12%, 75% { opacity: 1; transform: translate(-50%, 0); } 100% { opacity: 0; } }
   .btn.ghost { border-color: var(--line); color: var(--ink); background: var(--surface); font-size: 13px; min-height: 42px; }
   .btn:active { filter: brightness(.94); }
   .sub-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
@@ -233,7 +248,7 @@
   .seg { display: grid; grid-template-columns: repeat(6, 1fr); border: 1px solid var(--line); border-radius: 11px; overflow: hidden; background: var(--ground); }
   .seg button { min-height: 42px; border: none; background: none; font-size: 13px; font-weight: 600; color: var(--ink-2); cursor: pointer; padding: 0; }
   .seg button + button { border-left: 1px solid var(--line); }
-  .seg button[aria-pressed="true"] { background: var(--ink); color: var(--ground); }
+  .seg button[aria-pressed="true"] { background: var(--sel-fill); color: #fff; }
   .seg button[data-v=""][aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: inset 0 0 0 2px var(--ink-3); }
   .memo-in, .fix select {
     width: 100%; padding: 9px 12px; font: inherit; font-size: 16px; border-radius: 10px; min-height: 44px;
@@ -334,9 +349,9 @@
     <div class="sheet-grab"></div>
     <h3>★・行った</h3>
     <div class="chips" id="flagChips"></div>
-    <h3>カテゴリ</h3>
+    <h3>カテゴリ <small>（1つ選べます）</small></h3>
     <div class="chips" id="catChips"></div>
-    <h3>エリア</h3>
+    <h3>エリア <small>（1つ選べます）</small></h3>
     <div class="chips" id="areaChips"></div>
     <div class="sheet-foot">
       <button class="btn ghost" id="clearFilter">解除</button>
@@ -386,6 +401,7 @@ const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&l
 const opts = (list, cur) => list.map(v => `<option value="${esc(v)}"${v === cur ? " selected" : ""}>${esc(v)}</option>`).join("");
 const byPriority = (a, b) => (!!b.star - !!a.star) || (!!a.visited - !!b.visited) || (CATEGORIES.indexOf(a.category) - CATEGORIES.indexOf(b.category));
 const byRoute = (a, b) => (AREAS.indexOf(a.area) - AREAS.indexOf(b.area)) || byPriority(a, b);
+const toast = html => { document.querySelector(".toast")?.remove(); document.body.insertAdjacentHTML("beforeend", `<div class="toast" aria-hidden="true">${html}</div>`); setTimeout(() => document.querySelector(".toast")?.remove(), 1900); };
 const say = msg => { const el = document.getElementById("announce"); el.textContent = ""; setTimeout(() => el.textContent = msg, 30); };
 const isFixed = s => { const o = store[s.id] || {}, b = BY_ID[s.id]; return ("category" in o && o.category !== b.category) || ("area" in o && o.area !== b.area); };
 
@@ -414,19 +430,16 @@ function cardHTML(s) {
         <span class="tile serif" aria-hidden="true">${CAT_CHAR[s.category] || "他"}${s.visited ? `<span class="seal${stampIds.has(s.id) ? " stamp" : ""}">行</span>` : ""}</span>
         <span class="card-body">
           <span class="card-title" id="t-${k}" style="display:block">${esc(s.title)}</span>
-          <span id="g-${k}">
-          ${s.sig ? `<span class="sig" style="display:block">${esc(s.sig)}</span>` : ""}
-          <span class="meta">
+          <span id="g-${k}">${s.sig ? `<span class="sig" style="display:block">${esc(s.sig)}</span>` : ""}${s.visited ? `<span class="vh">、行った</span>` : ""}${s.star ? `<span class="vh">、お気に入り</span>` : ""}${s.day ? `<span class="vh">、${esc(s.day)}</span>` : ""}</span>
+          <span class="meta" aria-hidden="true">
             <span class="cat">${esc(s.category)}</span>
             <span>${esc(s.area === "未確認" ? "エリア未確認" : s.area)}</span>
-            ${s.day ? `<span class="day">${esc(s.day)}${dayDate(s.day) ? ` ${dayDate(s.day)}` : ""}</span>` : ""}
-            ${s.visited ? `<span class="vh">行った</span>` : ""}${s.star ? `<span class="vh">★付き</span>` : ""}
+            ${s.day && !(current === "plan") ? `<span class="day">${esc(s.day)}${dayDate(s.day) ? ` ${dayDate(s.day)}` : ""}</span>` : ""}
             ${memoHTML(s)}
-          </span>
           </span>
         </span>
       </button>
-      <button class="icon-btn star" data-act="star" aria-pressed="${!!s.star}" aria-label="★を付ける">${ICON_STAR}</button>
+      <button class="icon-btn star" data-act="star" aria-pressed="${!!s.star}" aria-label="お気に入り">${ICON_STAR}</button>
       <button class="icon-btn went" data-act="visited" aria-pressed="${!!s.visited}" aria-label="行った">${ICON_WENT}<small aria-hidden="true">行った</small></button>
     </div>
     ${open ? `<div class="card-detail">
@@ -437,6 +450,8 @@ function cardHTML(s) {
         ${["", ...DAYS].map(d => `<button data-act="day" data-v="${d}" aria-pressed="${(s.day || "") === d}"${d ? ` aria-label="${d}${dayDate(d) ? " " + dayDate(d) : ""}"` : ""}>${d ? d.replace("Day ", "D") : "未定"}</button>`).join("")}
       </div>
       <p class="moved" aria-hidden="true"></p>
+      <label class="label" for="memo-${k}">メモ</label>
+      <input class="memo-in" id="memo-${k}" data-field="memo" value="${esc(s.memo)}" placeholder="例：朝イチ / 予約済み" enterkeyhint="done">
       ${dishesHTML(s)}
       ${s.good || s.bad ? `<details class="rep">
         <summary>評判 <small>良い点${s.good ? s.good.split(" / ").length : 0}・気になる点${s.bad ? s.bad.split(" / ").length : 0}</small></summary>
@@ -446,14 +461,12 @@ function cardHTML(s) {
         ${s.bad ? `<div class="rep-col bad"><b>気になる点</b><ul>${s.bad.split(" / ").map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>` : ""}
         </div>
       </details>` : ""}
-      <div class="sub-actions">
+      <div class="more-row">
         <button class="btn ghost" data-act="map" aria-expanded="${map}">${map ? "地図を閉じる" : "ここで地図を見る"}</button>
-        <a class="btn ghost" href="https://www.google.com/search?tbm=isch&q=${encodeURIComponent(placeQ(s))}" target="_blank" rel="noopener">店の写真を見る</a>
-        <a class="btn ghost wide" href="https://www.google.com/search?hl=ja&q=${encodeURIComponent(placeQ(s) + " クチコミ")}" target="_blank" rel="noopener">Googleでクチコミを見る</a>
+        <a class="text-link" href="https://www.google.com/search?tbm=isch&q=${encodeURIComponent(placeQ(s))}" target="_blank" rel="noopener">店の写真</a>
+        <a class="text-link" href="https://www.google.com/search?hl=ja&q=${encodeURIComponent(placeQ(s) + " クチコミ")}" target="_blank" rel="noopener">クチコミ</a>
       </div>
       ${map ? mapFrame(s) : ""}
-      <label class="label" for="memo-${k}">メモ</label>
-      <input class="memo-in" id="memo-${k}" data-field="memo" value="${esc(s.memo)}" placeholder="例：朝イチ / 予約済み" enterkeyhint="done">
       <details class="fix">
         <summary>情報を直す（カテゴリ・エリア）</summary>
         <div class="fix-grid">
@@ -559,6 +572,37 @@ function dayRoutes(list) {
   }
   return out;
 }
+// 日の見出し（件数・ルート）。日程を変えたときは、ここだけ描き直す
+function dayHeadHTML(d, list, today = todayDay()) {
+  const v = list.filter(s => s.visited).length, routes = dayRoutes(list);
+  return `<h2>${esc(d)}
+      ${dayDate(d) ? `<span class="date">${dayDate(d)}</span>` : ""}${d === today ? `<span class="today">今日</span>` : ""}
+      <small>${list.length}件${v ? `・行った ${v}` : ""}</small></h2>
+      ${routes.length ? `<div class="route-links">${routes.map(r => `<a class="route-link" href="${r.href}" target="_blank" rel="noopener">${routes.length > 1 ? `${r.from}〜${r.to}件目を` : "この日を"}Googleマップで</a>`).join("")}</div>
+      ${list.length > 4 ? `<p class="caveat">Googleマップのアプリで開いてください（Safariで開くと、途中の立ち寄りは3か所までになります）</p>` : ""}` : ""}`;
+}
+// 日別プランで日程を変えたら、店をその日の欄へ移し、前後の日の件数とルートを更新する
+function moveInPlan(card, from, to, focusV) {
+  const all = allSpots(), today = todayDay();
+  const sec = d => document.querySelector(`#planBody section[data-day="${d}"]`);
+  const target = sec(to);
+  if (target) {
+    let list = target.querySelector(".list");
+    if (!list) { target.querySelector(".day-empty")?.remove(); list = document.createElement("div"); list.className = "list"; target.appendChild(list); }
+    list.appendChild(card);
+  }
+  [from, to].forEach(d => {
+    const s = sec(d); if (!s) return;
+    s.querySelector(".day-head").innerHTML = dayHeadHTML(d, all.filter(x => (x.day || "") === d).sort(byRoute), today);
+    const l = s.querySelector(".list");
+    if (l && !l.children.length) { l.remove(); s.insertAdjacentHTML("beforeend", `<p class="day-empty">まだ予定なし</p>`); }
+  });
+  if (target) {
+    card.scrollIntoView({ block: "nearest" });
+    card.querySelector(`[data-act="day"][data-v="${focusV}"]`)?.focus();
+  }
+  return !!target;
+}
 function renderPlan(all) {
   const today = todayDay();
   document.getElementById("planBody").innerHTML = [...DAYS, ""].map(d => {
@@ -567,12 +611,7 @@ function renderPlan(all) {
       const stars = list.filter(s => s.star && !s.visited);
       return `<section class="panel"><h2>★付き・日程未定 <small>${stars.length}件</small></h2>${stars.length ? listHTML(stars) : `<p class="day-empty">★付きのスポットは、全部どこかの日に入っています。</p>`}</section>`;
     }
-    const v = list.filter(s => s.visited).length, routes = dayRoutes(list);
-    return `<section class="panel" id="day-${DAYS.indexOf(d) + 1}" style="scroll-margin-top:12px"><h2>${esc(d)}
-      ${dayDate(d) ? `<span class="date">${dayDate(d)}</span>` : ""}${d === today ? `<span class="today">今日</span>` : ""}
-      <small>${list.length}件${v ? `・行った ${v}` : ""}</small></h2>
-      ${routes.length ? `<div class="route-links">${routes.map(r => `<a class="route-link" href="${r.href}" target="_blank" rel="noopener">${routes.length > 1 ? `${r.from}〜${r.to}件目を` : "この日を"}Googleマップで</a>`).join("")}</div>
-      ${list.length > 4 ? `<p class="caveat">Googleマップのアプリで開いてください（Safariで開くと、途中の立ち寄りは3か所までになります）</p>` : ""}` : ""}
+    return `<section class="panel" id="day-${DAYS.indexOf(d) + 1}" data-day="${d}" style="scroll-margin-top:12px"><div class="day-head">${dayHeadHTML(d, list, today)}</div>
       ${list.length ? listHTML(list) : `<p class="day-empty">まだ予定なし</p>`}</section>`;
   }).join("");
   const sd = document.getElementById("startDate");
@@ -638,21 +677,34 @@ document.addEventListener("click", e => {
   if (act === "star") { st(id).star = !s.star; save(); patchCard(id); say(s.star ? `${s.title} の★を外しました` : `${s.title} に★を付けました`); }
   else if (act === "visited") {
     st(id).visited = !s.visited; if (!s.visited) stampIds.add(id); save(); patchCard(id);
-    say(s.visited ? `${s.title} の「行った」を取り消しました` : `${s.title} を「行った」にしました。行った ${allSpots().filter(x => x.visited).length}件目`);
+    const n = allSpots().filter(x => x.visited).length;
+    say(s.visited ? `${s.title} の「行った」を取り消しました` : `${s.title} を「行った」にしました。行った ${n}件目`);
+    if (!s.visited) toast(`<b class="serif">行</b> ${n}軒目`);
   }
   else if (act === "toggle") {
-    openIds.has(id) ? (openIds.delete(id), mapIds.delete(id)) : openIds.add(id);
+    if (openIds.has(id)) { openIds.delete(id); mapIds.delete(id); }
+    else {
+      // 開くのは1店だけ。ほかに開いている店は閉じる
+      [...openIds].forEach(o => { openIds.delete(o); mapIds.delete(o); rerenderCard(o); });
+      openIds.add(id);
+    }
     rerenderCard(id, actEl);
-    if (openIds.has(id)) localStorage.setItem("hkSpots.hintSeen", "1");
+    if (openIds.has(id)) {
+      localStorage.setItem("hkSpots.hintSeen", "1");
+      document.querySelector(`.card[data-id="${CSS.escape(id)}"]`)?.scrollIntoView({ block: "nearest" });
+    }
   }
   else if (act === "map") { mapIds.has(id) ? mapIds.delete(id) : mapIds.add(id); rerenderCard(id, actEl); }
   else if (act === "day") {
     // カードは作り直さない（地図を読み直さない・指の下で店が動かない）。並べ替えは次のタブ切り替え時
-    const v = actEl.dataset.v;
+    const v = actEl.dataset.v, from = s.day || "";
     st(id).day = v; save();
     card.querySelectorAll('[data-act="day"]').forEach(b => b.setAttribute("aria-pressed", b.dataset.v === v));
     patchCard(id);
-    if (current === "plan") card.querySelector(".moved").textContent = `→ ${v || "日程未定"} に移しました（並びはタブを開き直すと更新されます）`;
+    if (current === "plan" && from !== v) {
+      const moved = moveInPlan(card, from, v, v);
+      card.querySelector(".moved").textContent = moved ? `${v} に入れました` : "日程を未定にしました（次にタブを開くと、この日から外れます）";
+    }
     say(v ? `${s.title} を ${v}${dayDate(v) ? " " + dayDate(v) : ""} に入れました` : `${s.title} の日程を未定にしました`);
   }
   else if (act === "unfix") { delete st(id).category; delete st(id).area; save(); render(); }
@@ -718,7 +770,7 @@ function clearFilters() { Object.assign(filters, { cat: null, area: null, star: 
 
 // ---- 保存内容 ----
 document.getElementById("exportBtn").onclick = async () => {
-  const text = JSON.stringify(store);
+  const text = JSON.stringify({ app: "hk-trip", store, start: localStorage.getItem(START_KEY) || "" });
   try { await navigator.clipboard.writeText(text); alert("保存内容をコピーしました。メモアプリなどに貼り付けて取っておいてください。"); }
   catch (e) { prompt("この文字列をコピーして取っておいてください。", text); }
 };
@@ -727,6 +779,9 @@ document.getElementById("importBtn").onclick = () => {
   if (!text) return;
   let v;
   try { v = JSON.parse(text); } catch (e) { v = null; }
+  // 新しい形式 { app, store, start } と、前の形式（store だけ）の両方を読める
+  let startIn = "";
+  if (v && v.app === "hk-trip") { startIn = /^\d{4}-\d{2}-\d{2}$/.test(v.start || "") ? v.start : ""; v = v.store; }
   if (!isStore(v)) { alert("読み込めませんでした。「保存内容をコピー」でコピーした文字列を、そのまま全部貼り付けてください。今の内容はそのままです。"); return; }
   // このアプリの店で、正しい値の項目だけを取り込む（おかしなエリア名などで店が一覧から消えないように）
   const clean = {};
@@ -744,10 +799,14 @@ document.getElementById("importBtn").onclick = () => {
   const n = Object.keys(clean).length;
   if (!n) { alert("このアプリの店の記録が1件も見つかりませんでした。今の内容はそのままです。"); return; }
   if (!confirm(`${n}件分の記録が見つかりました。今の内容を置き換えますか？`)) return;
-  store = clean; save(); render(); alert("戻しました。");
+  store = clean; save();
+  if (startIn) localStorage.setItem(START_KEY, startIn);
+  render(); alert("戻しました。");
 };
 document.getElementById("resetBtn").onclick = () => {
-  if (confirm("★・行った・日程・メモ・修正内容をすべて消します。先に「保存内容をコピー」で控えを取ることもできます。消しますか？")) { store = {}; save(); render(); }
+  if (confirm("★・行った・日程・メモ・修正内容・出発日をすべて消します。先に「保存内容をコピー」で控えを取ることもできます。消しますか？")) {
+    store = {}; save(); localStorage.removeItem(START_KEY); localStorage.removeItem(SESSION_KEY); render();
+  }
 };
 
 // ---- tabs（タブごとにスクロール位置を覚える） ----
@@ -835,7 +894,9 @@ if (localStorage.getItem("hkSpots.hintSeen")) document.querySelector(".list-hint
     Object.assign(scrollPos, ses.scrollPos || {});
     const page = ses.current || "list";
     render();
-    if (page !== "list") { current = "list"; showTab(page); } else window.scrollTo({ top: scrollPos.list });
+    // showTab は今の位置を保存してから切り替えるので、一覧の位置を控えて戻す
+    const listY = scrollPos.list;
+    if (page !== "list") { current = "list"; showTab(page); scrollPos.list = listY; } else window.scrollTo({ top: listY });
     return;
   }
   render();
