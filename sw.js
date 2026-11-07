@@ -1,6 +1,6 @@
 // HK Trip のオフライン用 service worker
 // 版番号はビルドのたびに Build-HKSpots.ps1 が書き換える → iPhone 側が新しい sw.js を見つけて入れ替わる
-const VERSION = "20261107-183045";
+const VERSION = "20261107-184642";
 const CACHE = "hk-trip-" + VERSION;
 const FILES = ["./", "./index.html", "./manifest.json", "./apple-touch-icon.png", "./icon-192.png", "./icon-512.png"];
 
