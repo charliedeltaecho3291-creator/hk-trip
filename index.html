@@ -3,182 +3,189 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Hong Kong Spots</title>
+<title>香港 Hong Kong Spots</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-title" content="HK Trip">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0e5a43">
 <style>
+  /* 世界観：茶餐廳のメニュー板と街の看板。借りるのは 書体（明朝の大字）・配色（翡翠緑／朱／生成り）・密度・
+     シグネチャー（エリア一覧を路線図に） だけで、操作部品は標準のまま。 */
   .viz-root {
     color-scheme: light;
-    --surface-1:      #fcfcfb;
-    --page-plane:     #f6f5f2;
-    --text-primary:   #0b0b0b;
-    --text-secondary: #52514e;
-    --text-muted:     #898781;
-    --grid-hairline:  #e1e0d9;
-    --border:         rgba(11,11,11,0.10);
-    --accent:         #d9343a; /* HK red */
-    --good:           #006300;
-    --star:           #e8a100;
-    --series-1: #d9343a; /* 飲茶・点心 */
-    --series-2: #eb6834; /* 麺・粥 */
-    --series-3: #c98500; /* 茶餐廳 */
-    --series-4: #8a4b2a; /* 焼味・煲仔飯 */
-    --series-5: #4a3aa7; /* レストラン */
-    --series-6: #e87ba4; /* スイーツ */
-    --series-7: #1baf7a; /* カフェ */
-    --series-8: #b07a3b; /* ベーカリー */
-    --series-9: #2a78d6; /* バー */
-    --series-10: #008300; /* 観光・買い物 */
-    --series-11: #898781; /* 未分類 */
+    --ground:     #f2ede2;  /* 生成りの紙 */
+    --surface:    #fbf8f1;
+    --ink:        #1d1b16;
+    --ink-2:      #4f4a3f;
+    --ink-3:      #686253;
+    --hairline:   #e2dbcb;
+    --line:       rgba(29,27,22,0.12);
+    --jade:       #0e5a43;  /* 看板の緑 */
+    --jade-ink:   #0e5a43;
+    --plate-ink:  #f6f1e4;
+    --plate-ink-2:#bcd6c9;
+    --vermilion:  #c23a22;  /* 朱 */
+    --good:       #1f6f3a;
+    --star:       #c48a00;
+    --sel:        rgba(14,90,67,0.20);
+    /* カテゴリ色（白抜きの大字が読める濃さにそろえる・両テーマ共通） */
+    --series-1: #c23a22; --series-2: #b8541c; --series-3: #9a6a00; --series-4: #7d4526;
+    --series-5: #4a3aa7; --series-6: #b23f72; --series-7: #12795a; --series-8: #8a6030;
+    --series-9: #2463ad; --series-10: #2f6f1f; --series-11: #6f6a5c;
   }
   :root[data-theme="dark"] .viz-root {
     color-scheme: dark;
-    --surface-1:      #1a1a19;
-    --page-plane:     #0d0d0d;
-    --text-primary:   #ffffff;
-    --text-secondary: #c3c2b7;
-    --text-muted:     #898781;
-    --grid-hairline:  #2c2c2a;
-    --border:         rgba(255,255,255,0.10);
-    --accent:         #ef5a5f;
-    --good:           #0ca30c;
-    --star:           #f5b82e;
-    --series-1: #ef5a5f;
-    --series-2: #d95926;
-    --series-3: #e0a400;
-    --series-4: #c07a52;
-    --series-5: #9085e9;
-    --series-6: #d55181;
-    --series-7: #199e70;
-    --series-8: #c99a5f;
-    --series-9: #3987e5;
-    --series-10: #22b322;
-    --series-11: #898781;
+    --ground:     #13120f;
+    --surface:    #1c1a16;
+    --ink:        #f1ece1;
+    --ink-2:      #c9c2b2;
+    --ink-3:      #a19a89;
+    --hairline:   #2e2b25;
+    --line:       rgba(241,236,225,0.12);
+    --jade:       #0b3b2d;
+    --jade-ink:   #5fbf98;
+    --plate-ink:  #f1ece1;
+    --plate-ink-2:#9fc4b3;
+    --vermilion:  #e8664d;
+    --good:       #4cb36d;
+    --star:       #f0b429;
+    --sel:        rgba(95,191,152,0.28);
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { margin: 0; padding: 0; }
   body {
-    background: var(--page-plane);
-    font-family: system-ui, -apple-system, "Segoe UI", "Hiragino Sans", sans-serif;
-    color: var(--text-primary);
+    background: var(--ground); color: var(--ink);
+    font-family: -apple-system, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Segoe UI", system-ui, sans-serif;
+    font-size: 15px; line-height: 1.5; caret-color: var(--vermilion); accent-color: var(--jade-ink);
+    font-variant-numeric: tabular-nums;
   }
-  .wrap { max-width: 760px; margin: 0 auto; padding: calc(16px + env(safe-area-inset-top)) 14px 80px; }
-  header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
-  h1 { font-size: 21px; margin: 0 0 2px; }
-  h1 .flag { margin-right: 4px; }
-  .sub { color: var(--text-secondary); font-size: 12.5px; margin: 0; }
-  .theme-toggle {
-    border: 1px solid var(--border); background: var(--surface-1); color: var(--text-secondary);
-    border-radius: 8px; padding: 6px 10px; font-size: 12px; cursor: pointer; flex: none;
-  }
+  ::selection { background: var(--sel); color: var(--ink); }
+  :focus-visible { outline: 2px solid var(--vermilion); outline-offset: 2px; border-radius: 6px; }
+  .serif { font-family: "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", "Noto Serif JP", serif; }
 
-  .page-tabs { display:flex; gap:2px; border-bottom:1px solid var(--border); margin:6px 0 14px; position: sticky; top: 0; background: var(--page-plane); z-index: 5; }
-  .page-tab { flex:1; background:none; border:none; border-bottom:3px solid transparent; padding:10px 4px; font-size:14px; font-weight:600; color:var(--text-muted); cursor:pointer; }
-  .page-tab.active { color:var(--text-primary); border-bottom-color:var(--accent); }
+  /* ---- 看板（ヘッダー） ---- */
+  .plate { background: var(--jade); color: var(--plate-ink); padding: calc(18px + env(safe-area-inset-top)) 0 16px; }
+  .plate-in { max-width: 760px; margin: 0 auto; padding: 0 16px; display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; align-items: end; }
+  .plate h1 { margin: 0; font-size: 40px; line-height: 1; font-weight: 600; letter-spacing: 0.02em; }
+  .plate h1 .en { display: block; font-family: -apple-system, "Segoe UI", system-ui, sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.08em; margin-top: 8px; color: var(--plate-ink-2); }
+  .tally { grid-column: 1 / -1; margin: 12px 0 0; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.18); display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: 13px; color: var(--plate-ink-2); }
+  .tally b { color: var(--plate-ink); font-size: 17px; font-weight: 700; margin-right: 3px; }
+  .theme-toggle {
+    align-self: start; border: 1px solid rgba(255,255,255,0.35); background: transparent; color: var(--plate-ink);
+    border-radius: 999px; padding: 6px 12px; font: inherit; font-size: 12px; cursor: pointer; min-height: 32px;
+  }
+  .theme-toggle:active { background: rgba(255,255,255,0.12); }
+
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 14px calc(48px + env(safe-area-inset-bottom)); }
+
+  /* ---- タブ ---- */
+  .page-tabs { display: flex; position: sticky; top: 0; z-index: 5; background: var(--ground); border-bottom: 1px solid var(--line); margin: 0 -14px 16px; padding: 0 14px; }
+  .page-tab { flex: 1; background: none; border: none; border-bottom: 3px solid transparent; padding: 13px 4px 11px; font: inherit; font-size: 14px; font-weight: 600; color: var(--ink-3); cursor: pointer; }
+  .page-tab.active { color: var(--ink); border-bottom-color: var(--vermilion); }
   .page { display: none; }
   .page.active { display: block; }
 
-  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 14px; }
-  .kpi { background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px; padding: 10px 10px; }
-  .kpi .label { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
-  .kpi .value { font-size: 20px; font-weight: 700; }
-  .kpi .value.up { color: var(--good); }
-  .progress { height: 6px; background: var(--grid-hairline); border-radius: 3px; overflow: hidden; margin: -6px 0 16px; }
-  .progress > div { height: 100%; background: var(--good); transition: width .3s; }
-
+  /* ---- 検索・絞り込み ---- */
   .search {
-    width: 100%; padding: 10px 12px; font-size: 15px; border-radius: 10px;
-    border: 1px solid var(--border); background: var(--surface-1); color: var(--text-primary); margin-bottom: 10px;
+    width: 100%; padding: 11px 14px; font: inherit; font-size: 16px; border-radius: 12px;
+    border: 1px solid var(--line); background: var(--surface); color: var(--ink); margin-bottom: 14px;
   }
-  .chip-heading { font-size: 12.5px; font-weight: 600; margin: 4px 0 6px; color: var(--text-secondary); }
-  .chips { display: flex; gap: 6px; margin: 0 0 12px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+  .search::placeholder { color: var(--ink-3); }
+  .filter-row { display: grid; grid-template-columns: 4.2em minmax(0, 1fr); align-items: center; gap: 8px; margin-bottom: 8px; }
+  .filter-row > span { font-size: 12px; font-weight: 600; color: var(--ink-3); }
+  .chips { display: flex; gap: 6px; overflow-x: auto; padding: 2px 0 4px; scrollbar-width: none; }
   .chips::-webkit-scrollbar { display: none; }
   .chip {
-    display: inline-flex; align-items: center; gap: 6px; flex: none;
-    border: 1px solid var(--border); background: var(--surface-1);
-    border-radius: 999px; padding: 6px 12px 6px 9px; font-size: 13px; cursor: pointer;
-    color: var(--text-secondary); user-select: none; white-space: nowrap;
+    display: inline-flex; align-items: center; gap: 6px; flex: none; min-height: 34px;
+    border: 1px solid var(--line); background: var(--surface); color: var(--ink-2);
+    border-radius: 999px; padding: 6px 12px; font-size: 13px; cursor: pointer; user-select: none; white-space: nowrap;
+    transition: background-color .15s ease-out, color .15s ease-out;
   }
-  .chip .dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
-  .chip.active { color: var(--text-primary); border-color: var(--text-primary); font-weight: 600; }
-  .chip small { color: var(--text-muted); font-weight: 400; }
-  .toggles { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+  .chip .sw { width: 8px; height: 8px; border-radius: 2px; flex: none; }
+  .chip small { color: var(--ink-3); font-size: 11.5px; }
+  .chip.active { background: var(--ink); color: var(--ground); border-color: var(--ink); font-weight: 600; }
+  .chip.active small { color: inherit; opacity: .7; }
+  .toggles { display: flex; gap: 6px; margin: 4px 0 18px; padding-left: calc(4.2em + 8px); }
 
-  section.panel { margin-bottom: 22px; }
-  .panel h2 { font-size: 15px; margin: 0 0 8px; display: flex; align-items: baseline; gap: 8px; }
-  .panel h2 small { font-size: 12px; color: var(--text-muted); font-weight: 400; }
+  /* ---- 見出し ---- */
+  section.panel { margin-bottom: 26px; }
+  .panel h2 { font-size: 17px; margin: 0 0 8px; display: flex; align-items: baseline; gap: 8px; text-wrap: balance; }
+  .panel h2 small { font-size: 12.5px; color: var(--ink-3); font-weight: 500; }
 
-  .card {
-    background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px;
-    margin-bottom: 8px; overflow: hidden; border-left: 4px solid var(--cat, var(--series-11));
-  }
-  .card.visited { opacity: .55; }
-  .card-main { display: flex; align-items: center; gap: 10px; padding: 11px 12px; cursor: pointer; }
+  /* ---- 一覧（1枚の面に行を並べる） ---- */
+  .list { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+  .card + .card { border-top: 1px solid var(--hairline); }
+  .card-main { display: flex; align-items: center; gap: 10px; padding: 10px 6px 10px 4px; cursor: pointer; }
   .card-body { flex: 1; min-width: 0; }
-  .card-title { font-size: 15px; font-weight: 600; line-height: 1.3; word-break: break-word; }
-  .card.visited .card-title { text-decoration: line-through; }
-  .thumb { width: 58px; height: 58px; border-radius: 9px; object-fit: cover; flex: none; background: var(--grid-hairline); }
-  .thumb.none { display: flex; align-items: center; justify-content: center; font-size: 24px; }
-  .sig { font-size: 12.5px; color: var(--text-secondary); margin-top: 2px; line-height: 1.35; }
-  .photo-big { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 10px; margin-top: 12px; display: block; background: var(--grid-hairline); }
-  .credit { font-size: 10.5px; color: var(--text-muted); margin-top: 4px; line-height: 1.4; }
-  .credit a { color: var(--text-muted); }
-  .pitch { font-size: 13.5px; line-height: 1.6; margin-top: 10px; color: var(--text-primary); }
-  .pitch b { color: var(--accent); }
-  .sub-btn {
-    display: block; text-align: center; margin-top: 8px; padding: 9px; border-radius: 10px;
-    border: 1px solid var(--accent); color: var(--accent); font-weight: 600; font-size: 13.5px; text-decoration: none;
-  }
-  .meta { font-size: 12px; color: var(--text-muted); margin-top: 3px; display: flex; gap: 8px; flex-wrap: wrap; }
-  .meta .cat { color: var(--cat); font-weight: 600; }
-  .meta .day { color: var(--accent); font-weight: 600; }
-  .meta .memo { color: var(--text-secondary); }
-  .icon-btn {
-    border: none; background: none; font-size: 22px; line-height: 1; padding: 4px; cursor: pointer; color: var(--grid-hairline); flex: none;
-  }
+  .card-title { font-size: 15.5px; font-weight: 600; line-height: 1.3; word-break: break-word; }
+  .card.visited .card-title { color: var(--ink-3); text-decoration: line-through; text-decoration-thickness: 1px; }
+  .card.visited .thumb { opacity: .45; }
+  .thumb { width: 56px; height: 56px; border-radius: 8px; object-fit: cover; flex: none; background: var(--hairline); }
+  .thumb.tile { display: flex; align-items: center; justify-content: center; background: var(--cat); color: #fff; font-size: 27px; font-weight: 600; }
+  .sig { font-size: 13px; color: var(--ink-2); margin-top: 2px; line-height: 1.4; }
+  .meta { font-size: 12px; color: var(--ink-3); margin-top: 4px; display: flex; gap: 4px 10px; flex-wrap: wrap; align-items: center; }
+  .meta .cat { display: inline-flex; align-items: center; gap: 5px; color: var(--ink-2); }
+  .meta .cat::before { content: ""; width: 8px; height: 8px; border-radius: 2px; background: var(--cat); }
+  .meta .day { color: var(--vermilion); font-weight: 700; }
+  .meta .memo { color: var(--ink-2); }
+  .icon-btn { border: none; background: none; padding: 0; width: 40px; height: 44px; display: grid; place-items: center; cursor: pointer; flex: none; color: var(--ink-3); }
+  .icon-btn svg { width: 23px; height: 23px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linejoin: round; stroke-linecap: round; transition: fill .15s ease-out, color .15s ease-out; }
   .icon-btn.star.on { color: var(--star); }
+  .icon-btn.star.on svg { fill: currentColor; }
   .icon-btn.check.on { color: var(--good); }
-  .card-detail { display: none; padding: 0 12px 12px; border-top: 1px dashed var(--border); }
+  .icon-btn.check.on svg circle { fill: currentColor; }
+  .icon-btn.check.on svg path { stroke: #fff; }
+
+  .card-detail { display: none; padding: 2px 14px 16px; }
   .card.open .card-detail { display: block; }
-  .field { display: grid; grid-template-columns: 70px 1fr; align-items: center; gap: 8px; margin-top: 10px; font-size: 13px; color: var(--text-secondary); }
+  .card.open .card-main { background: color-mix(in srgb, var(--ground) 55%, var(--surface)); }
+  .photo-big { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 10px; margin-top: 12px; display: block; background: var(--hairline); }
+  .credit { font-size: 11px; color: var(--ink-3); margin-top: 5px; line-height: 1.45; }
+  .credit a { color: inherit; text-underline-offset: 2px; }
+  .pitch { font-size: 14px; line-height: 1.7; margin-top: 12px; max-width: 38em; text-wrap: pretty; }
+  .pitch b { color: var(--jade-ink); }
+  .field { display: grid; grid-template-columns: 4.2em 1fr; align-items: center; gap: 8px; margin-top: 10px; font-size: 13px; color: var(--ink-2); }
   .field select, .field input {
-    width: 100%; padding: 7px 8px; font-size: 14px; border-radius: 8px;
-    border: 1px solid var(--border); background: var(--page-plane); color: var(--text-primary);
+    width: 100%; padding: 8px 10px; font: inherit; font-size: 16px; border-radius: 9px; min-height: 40px;
+    border: 1px solid var(--line); background: var(--ground); color: var(--ink);
   }
-  .map-frame { width: 100%; height: 220px; border: 1px solid var(--border); border-radius: 10px; margin-top: 12px; display: block; }
-  .map-btn {
-    display: block; text-align: center; margin-top: 12px; padding: 10px; border-radius: 10px;
-    background: var(--accent); color: #fff; font-weight: 600; font-size: 14px; text-decoration: none;
-  }
-  .empty { color: var(--text-muted); font-size: 13px; padding: 20px 0; text-align: center; }
+  .map-frame { width: 100%; height: 220px; border: 1px solid var(--line); border-radius: 10px; margin-top: 14px; display: block; }
+  .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+  .btn { display: flex; align-items: center; justify-content: center; text-align: center; min-height: 44px; padding: 8px 10px; border-radius: 10px; font-weight: 600; font-size: 13.5px; line-height: 1.3; text-decoration: none; }
+  .btn.primary { background: var(--vermilion); color: #fff; }
+  .btn.ghost { border: 1px solid var(--line); color: var(--ink); background: var(--surface); }
+  .btn:active { filter: brightness(.94); }
+  .empty { color: var(--ink-3); font-size: 13.5px; padding: 22px 16px; text-align: center; }
 
-  .area-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 16px; }
-  .area-tile { background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; cursor: pointer; }
-  .area-tile .name { font-size: 13.5px; font-weight: 600; }
-  .area-tile .count { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-  .area-tile .bar { height: 4px; background: var(--grid-hairline); border-radius: 2px; margin-top: 6px; overflow: hidden; }
-  .area-tile .bar > div { height: 100%; background: var(--good); }
+  /* ---- シグネチャー：エリアを路線図の駅として並べる ---- */
+  .route { list-style: none; margin: 0 0 28px; padding: 4px 0; position: relative; }
+  .route::before { content: ""; position: absolute; left: 13px; top: 22px; bottom: 22px; width: 6px; border-radius: 3px; background: var(--jade-ink); }
+  .stop { position: relative; display: grid; grid-template-columns: 32px 1fr auto; align-items: center; gap: 10px; padding: 9px 4px 9px 0; cursor: pointer; }
+  .stop .dot { width: 22px; height: 22px; margin-left: 5px; border-radius: 50%; background: var(--ground); border: 5px solid var(--jade-ink); z-index: 1; }
+  .stop.done .dot { background: var(--jade-ink); }
+  .stop .nm { font-size: 17px; font-weight: 600; }
+  .stop .ct { font-size: 12.5px; color: var(--ink-3); text-align: right; white-space: nowrap; }
+  .stop .ct b { color: var(--ink); font-size: 15px; }
 
-  .note-box {
-    background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px;
-    padding: 10px 14px; margin: 18px 0; font-size: 12px; color: var(--text-secondary); line-height: 1.7;
-  }
-  .note-box b { color: var(--text-primary); }
-  .link-btn { background: none; border: none; color: var(--text-secondary); font-size: 12px; cursor: pointer; text-decoration: underline; padding: 0; }
-  @media (max-width: 420px) { .kpi .value { font-size: 18px; } .kpi .label { font-size: 10.5px; } }
+  .day-empty { margin: -2px 0 0; padding: 0 0 12px; border-bottom: 1px dashed var(--line); font-size: 13px; color: var(--ink-3); }
+  #planBody section.panel:has(.day-empty) { margin-bottom: 14px; }
+  .hint { font-size: 13px; color: var(--ink-2); margin: 0 0 18px; line-height: 1.6; }
+  .colophon { border-top: 1px solid var(--line); margin-top: 30px; padding-top: 14px; font-size: 12px; color: var(--ink-3); line-height: 1.75; max-width: 40em; }
+  .colophon p { margin: 0 0 6px; }
+  .link-btn { background: none; border: none; color: var(--vermilion); font: inherit; font-size: 12px; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; padding: 6px 0; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
 </style>
 </head>
 <body class="viz-root">
-<div class="wrap">
-<header>
-  <div>
-    <h1><span class="flag">🇭🇰</span>Hong Kong Spots</h1>
-    <p class="sub" id="subLine"></p>
+<header class="plate">
+  <div class="plate-in">
+    <h1 class="serif">香港<span class="en">HONG KONG SPOTS</span></h1>
+    <button class="theme-toggle" id="themeToggle">ダーク</button>
+    <p class="tally" id="tally"></p>
   </div>
-  <button class="theme-toggle" id="themeToggle">ダークモード</button>
 </header>
+<div class="wrap">
 
 <nav class="page-tabs" id="pageTabs">
   <button class="page-tab active" data-page="list">一覧</button>
@@ -186,50 +193,39 @@
   <button class="page-tab" data-page="plan">日別プラン</button>
 </nav>
 
-<div class="kpis">
-  <div class="kpi"><div class="label">スポット</div><div class="value" id="kpiTotal">-</div></div>
-  <div class="kpi"><div class="label">行った</div><div class="value up" id="kpiVisited">-</div></div>
-  <div class="kpi"><div class="label">★ 絶対行く</div><div class="value" id="kpiStar">-</div></div>
-  <div class="kpi"><div class="label">日程に入れた</div><div class="value" id="kpiPlanned">-</div></div>
-</div>
-<div class="progress"><div id="progressBar" style="width:0"></div></div>
-
 <!-- 一覧 -->
 <div class="page active" id="page-list">
-  <input class="search" id="search" type="search" placeholder="店名で検索">
-  <div class="chip-heading">カテゴリ</div>
-  <div class="chips" id="catChips"></div>
-  <div class="chip-heading">エリア</div>
-  <div class="chips" id="areaChips"></div>
+  <input class="search" id="search" type="search" placeholder="店名・料理名で検索">
+  <div class="filter-row"><span>カテゴリ</span><div class="chips" id="catChips"></div></div>
+  <div class="filter-row"><span>エリア</span><div class="chips" id="areaChips"></div></div>
   <div class="toggles">
-    <span class="chip" id="fStar">★ のみ</span>
-    <span class="chip" id="fUnvisited">未訪問のみ</span>
+    <span class="chip" id="fStar" role="button" tabindex="0">★だけ</span>
+    <span class="chip" id="fUnvisited" role="button" tabindex="0">まだ行ってない</span>
   </div>
   <section class="panel">
-    <h2>スポット一覧 <small id="listCount"></small></h2>
+    <h2>スポット <small id="listCount"></small></h2>
     <div id="listBody"></div>
   </section>
 </div>
 
 <!-- エリア別 -->
 <div class="page" id="page-area">
-  <div class="area-grid" id="areaGrid"></div>
+  <ol class="route" id="areaGrid"></ol>
   <div id="areaBody"></div>
 </div>
 
 <!-- 日別プラン -->
 <div class="page" id="page-plan">
-  <div class="note-box">各スポットをタップして「日程」を選ぶと、ここに日ごとにまとまります。</div>
+  <p class="hint">スポットを開いて「日程」を選ぶと、ここに日ごとにまとまります。</p>
   <div id="planBody"></div>
 </div>
 
-<div class="note-box">
-  <b>データについて：</b>Googleマップ「デフォルト リスト」のうち、タグが🇭🇰 Hong Kongの<span id="noteCount"></span>件です（書き出し日 <span id="noteDate"></span>）。
-  名物・紹介文・カテゴリ・エリアはWeb上の情報をもとにまとめたもので、「（推定）」と付いたものは確認できなかった店です。カテゴリ・エリアが違っていたら、カードをタップして直してください。
-  写真はWikimedia Commonsの自由ライセンス画像です。その店で撮られた写真がない場合は、料理のイメージ写真を表示しています。
-  ★・行った・日程・メモ・修正内容は、この端末のブラウザに保存されます。
-  <br><button class="link-btn" id="resetBtn">保存内容をすべてリセット</button>
-</div>
+<footer class="colophon">
+  <p>Googleマップ「デフォルト リスト」のうち、タグが Hong Kong の<span id="noteCount"></span>件（書き出し日 <span id="noteDate"></span>）。</p>
+  <p>名物・紹介文・カテゴリ・エリアはWeb上の情報をもとにまとめたもので、「（推定）」は確認できなかった店です。違っていたらスポットを開いて直せます。</p>
+  <p>写真はWikimedia Commonsの自由ライセンス画像です。その店の写真がないときは、料理のイメージ写真を出しています。</p>
+  <p>★・行った・日程・メモ・修正内容は、この端末のブラウザに保存されます。<br><button class="link-btn" id="resetBtn">保存内容をすべてリセット</button></p>
+</footer>
 </div>
 
 <script>
@@ -238,7 +234,10 @@ const EXPORT_DATE = "2026/11/04";
 
 const CATEGORIES = ["飲茶・点心","麺・粥","茶餐廳","焼味・煲仔飯","レストラン","スイーツ","カフェ","ベーカリー","バー","観光・買い物","未分類"];
 const CAT_COLOR = Object.fromEntries(CATEGORIES.map((c, i) => [c, `var(--series-${i + 1})`]));
-const CAT_ICON = { "飲茶・点心":"🥟","麺・粥":"🍜","茶餐廳":"☕","焼味・煲仔飯":"🍖","レストラン":"🍽️","スイーツ":"🍧","カフェ":"☕","ベーカリー":"🥐","バー":"🍸","観光・買い物":"📸" };
+// 写真がない店は、メニュー板のようにカテゴリの一字を大きく出す
+const CAT_CHAR = { "飲茶・点心":"点","麺・粥":"麺","茶餐廳":"茶","焼味・煲仔飯":"焼","レストラン":"食","スイーツ":"甜","カフェ":"珈","ベーカリー":"包","バー":"酒","観光・買い物":"遊","未分類":"他" };
+const ICON_STAR = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.6l2.55 5.2 5.7.83-4.13 4.02.98 5.68L12 16.65l-5.1 2.68.98-5.68L3.75 9.63l5.7-.83z"/></svg>`;
+const ICON_CHECK = `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.6"/><path d="M8.1 12.3l2.7 2.7 5.2-5.4"/></svg>`;
 const AREAS =["中環・上環","湾仔・銅鑼湾","尖沙咀","佐敦・油麻地","旺角・太子","深水埗","その他","未確認"];
 const DAYS = ["Day 1","Day 2","Day 3","Day 4","Day 5"];
 const STORE_KEY = "hkSpots.v1";
@@ -264,8 +263,8 @@ function cardHTML(s) {
   const open = openIds.has(s.id);
   return `<div class="card${s.visited ? " visited" : ""}${open ? " open" : ""}" data-id="${s.id}" style="--cat:${CAT_COLOR[s.category] || CAT_COLOR["未分類"]}">
     <div class="card-main" data-act="toggle">
-      <button class="icon-btn star${s.star ? " on" : ""}" data-act="star" aria-label="絶対行く">★</button>
-      ${s.photo ? `<img class="thumb" loading="lazy" src="${esc(s.photo.src)}" alt="">` : `<div class="thumb none">${CAT_ICON[s.category] || "📍"}</div>`}
+      <button class="icon-btn star${s.star ? " on" : ""}" data-act="star" aria-label="絶対行く" aria-pressed="${!!s.star}">${ICON_STAR}</button>
+      ${s.photo ? `<img class="thumb" loading="lazy" src="${esc(s.photo.src)}" alt="">` : `<div class="thumb tile serif" aria-hidden="true">${CAT_CHAR[s.category] || "他"}</div>`}
       <div class="card-body">
         <div class="card-title">${esc(s.title)}</div>
         ${s.sig ? `<div class="sig">${esc(s.sig)}</div>` : ""}
@@ -273,23 +272,25 @@ function cardHTML(s) {
           <span class="cat">${esc(s.category)}</span>
           <span>${esc(s.area === "未確認" ? "エリア未確認" : s.area)}</span>
           ${s.day ? `<span class="day">${esc(s.day)}</span>` : ""}
-          ${s.memo ? `<span class="memo">📝 ${esc(s.memo)}</span>` : ""}
+          ${s.memo ? `<span class="memo">メモ：${esc(s.memo)}</span>` : ""}
         </div>
       </div>
-      <button class="icon-btn check${s.visited ? " on" : ""}" data-act="visited" aria-label="行った">✔</button>
+      <button class="icon-btn check${s.visited ? " on" : ""}" data-act="visited" aria-label="行った" aria-pressed="${!!s.visited}">${ICON_CHECK}</button>
     </div>
     <div class="card-detail">
       ${s.photo ? `<img class="photo-big" loading="lazy" src="${esc(s.photo.src)}" alt="${esc(s.sig)}">
       <div class="credit">${s.photo.store ? "この店で撮影された写真" : "料理のイメージ写真（この店のものではありません）"}・
         <a href="${esc(s.photo.page)}" target="_blank" rel="noopener">${esc(s.photo.author)} / ${esc(s.photo.license)}</a>, Wikimedia Commons</div>` : ""}
       ${s.sig ? `<div class="pitch"><b>名物：</b>${esc(s.sig)}<br>${esc(s.pitch)}</div>` : ""}
-      <a class="sub-btn" href="https://www.google.com/search?tbm=isch&q=${encodeURIComponent(s.title.replace(/\s*[\(\[].*?[\)\]]/g, "") + " Hong Kong")}" target="_blank" rel="noopener">この店の写真をGoogleで見る</a>
       <label class="field">日程<select data-field="day">${opts(DAYS, s.day, "未定")}</select></label>
       <label class="field">カテゴリ<select data-field="category">${opts(CATEGORIES, s.category)}</select></label>
       <label class="field">エリア<select data-field="area">${opts(AREAS, s.area)}</select></label>
       <label class="field">メモ<input data-field="memo" value="${esc(s.memo)}" placeholder="例：朝イチ / 予約済み"></label>
       <div class="map-wrap" data-q="${esc(s.title)}">${open ? mapFrame(s.title) : ""}</div>
-      <a class="map-btn" href="${esc(s.url)}" target="_blank" rel="noopener">Googleマップで開く（レビュー・写真）</a>
+      <div class="actions">
+        <a class="btn primary" href="${esc(s.url)}" target="_blank" rel="noopener">Googleマップで開く</a>
+        <a class="btn ghost" href="https://www.google.com/search?tbm=isch&q=${encodeURIComponent(s.title.replace(/\s*[\(\[].*?[\)\]]/g, "") + " Hong Kong")}" target="_blank" rel="noopener">この店の写真を見る</a>
+      </div>
     </div>
   </div>`;
 }
@@ -297,10 +298,12 @@ function cardHTML(s) {
 function chips(el, list, key, counts) {
   el.innerHTML = `<span class="chip${filters[key] === null ? " active" : ""}" data-v="">すべて <small>${counts.__all}</small></span>` +
     list.filter(v => counts[v]).map(v => `<span class="chip${filters[key] === v ? " active" : ""}" data-v="${esc(v)}">` +
-      (key === "cat" ? `<span class="dot" style="background:${CAT_COLOR[v]}"></span>` : "") +
+      (key === "cat" ? `<span class="sw" style="background:${CAT_COLOR[v]}"></span>` : "") +
       `${esc(v)} <small>${counts[v]}</small></span>`).join("");
   el.querySelectorAll(".chip").forEach(c => c.onclick = () => { filters[key] = c.dataset.v || null; render(); });
 }
+
+const listHTML = rows => `<div class="list">${rows.map(cardHTML).join("")}</div>`;
 
 function countBy(list, f) {
   const o = { __all: list.length };
@@ -317,7 +320,8 @@ function renderList(all) {
   const rows = base.filter(s => (!filters.cat || s.category === filters.cat) && (!filters.area || s.area === filters.area))
     .sort((a, b) => (b.star - a.star) || (a.visited - b.visited) || (CATEGORIES.indexOf(a.category) - CATEGORIES.indexOf(b.category)));
   document.getElementById("listCount").textContent = `${rows.length}件`;
-  document.getElementById("listBody").innerHTML = rows.length ? rows.map(cardHTML).join("") : `<div class="empty">該当するスポットがありません</div>`;
+  document.getElementById("listBody").innerHTML = rows.length ? listHTML(rows)
+    : `<div class="list"><div class="empty">この条件に合うスポットはありません。絞り込みを「すべて」に戻してみてください。</div></div>`;
   document.getElementById("fStar").classList.toggle("active", filters.star);
   document.getElementById("fUnvisited").classList.toggle("active", filters.unvisited);
 }
@@ -327,14 +331,15 @@ function renderArea(all) {
   const used = AREAS.filter(a => all.some(s => s.area === a));
   grid.innerHTML = used.map(a => {
     const list = all.filter(s => s.area === a), v = list.filter(s => s.visited).length;
-    return `<div class="area-tile" data-a="${esc(a)}"><div class="name">${esc(a)}</div>
-      <div class="count">${list.length}件・行った ${v}</div><div class="bar"><div style="width:${list.length ? v / list.length * 100 : 0}%"></div></div></div>`;
+    return `<li class="stop${list.length && v === list.length ? " done" : ""}" data-a="${esc(a)}" role="button" tabindex="0">
+      <span class="dot"></span><span class="nm">${esc(a)}</span>
+      <span class="ct"><b>${list.length}</b>件${v ? `・行った ${v}` : ""}</span></li>`;
   }).join("");
-  grid.querySelectorAll(".area-tile").forEach(t => t.onclick = () =>
+  grid.querySelectorAll(".stop").forEach(t => t.onclick = () =>
     document.getElementById("area-" + used.indexOf(t.dataset.a))?.scrollIntoView({ behavior: "smooth", block: "start" }));
   body.innerHTML = used.map((a, i) => {
     const list = all.filter(s => s.area === a).sort((x, y) => (y.star - x.star) || (CATEGORIES.indexOf(x.category) - CATEGORIES.indexOf(y.category)));
-    return `<section class="panel" id="area-${i}" style="scroll-margin-top:56px"><h2>${esc(a)} <small>${list.length}件</small></h2>${list.map(cardHTML).join("")}</section>`;
+    return `<section class="panel" id="area-${i}" style="scroll-margin-top:56px"><h2>${esc(a)} <small>${list.length}件</small></h2>${listHTML(list)}</section>`;
   }).join("");
 }
 
@@ -344,19 +349,17 @@ function renderPlan(all) {
     const list = all.filter(s => (s.day || "") === d);
     if (!d) {
       const stars = list.filter(s => s.star);
-      return `<section class="panel"><h2>未定の ★ スポット <small>${stars.length}件</small></h2>${stars.length ? stars.map(cardHTML).join("") : `<div class="empty">★を付けたスポットで日程未定のものはありません</div>`}</section>`;
+      return `<section class="panel"><h2>★を付けて日程未定 <small>${stars.length}件</small></h2>${stars.length ? listHTML(stars) : `<div class="list"><div class="empty">★を付けたスポットは、全部どこかの日に入っています。</div></div>`}</section>`;
     }
-    return `<section class="panel"><h2>${esc(d)} <small>${list.length}件</small></h2>${list.length ? list.map(cardHTML).join("") : `<div class="empty">まだ予定がありません</div>`}</section>`;
+    return `<section class="panel"><h2>${esc(d)} <small>${list.length}件</small></h2>${list.length ? listHTML(list) : `<p class="day-empty">まだ予定なし</p>`}</section>`;
   }).join("");
 }
 
 function renderKpis(all) {
   const v = all.filter(s => s.visited).length;
-  document.getElementById("kpiTotal").textContent = all.length;
-  document.getElementById("kpiVisited").textContent = v;
-  document.getElementById("kpiStar").textContent = all.filter(s => s.star).length;
-  document.getElementById("kpiPlanned").textContent = all.filter(s => s.day).length;
-  document.getElementById("progressBar").style.width = `${all.length ? v / all.length * 100 : 0}%`;
+  document.getElementById("tally").innerHTML =
+    `<span><b>${all.length}</b>スポット</span><span>行った<b style="margin-left:4px">${v}</b></span>` +
+    `<span>★<b style="margin-left:3px">${all.filter(s => s.star).length}</b></span><span>日程に入れた<b style="margin-left:4px">${all.filter(s => s.day).length}</b></span>`;
 }
 
 function render() {
@@ -404,12 +407,15 @@ document.querySelectorAll(".page-tab").forEach(btn => {
     window.scrollTo({ top: 0 });
   });
 });
+// URL の #area / #plan で最初に開くタブを選べる
+document.querySelector(`.page-tab[data-page="${location.hash.slice(1)}"]`)?.click();
 
 // ---- theme ----
 const themeBtn = document.getElementById("themeToggle");
 function applyTheme(t) {
   document.documentElement.setAttribute("data-theme", t);
-  themeBtn.textContent = t === "dark" ? "ライトモード" : "ダークモード";
+  themeBtn.textContent = t === "dark" ? "ライト" : "ダーク";
+  document.querySelector('meta[name="theme-color"]').content = t === "dark" ? "#0b3b2d" : "#0e5a43";
 }
 applyTheme(localStorage.getItem("hkSpots.theme") || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"));
 themeBtn.addEventListener("click", () => {
@@ -417,7 +423,10 @@ themeBtn.addEventListener("click", () => {
   localStorage.setItem("hkSpots.theme", next); applyTheme(next);
 });
 
-document.getElementById("subLine").textContent = `Googleマップ保存リストより ${SPOTS.length}件`;
+// role="button" にした要素は Enter / Space でも押せるように
+document.addEventListener("keydown", e => {
+  if ((e.key === "Enter" || e.key === " ") && e.target.matches('[role="button"]')) { e.preventDefault(); e.target.click(); }
+});
 document.getElementById("noteCount").textContent = SPOTS.length;
 document.getElementById("noteDate").textContent = EXPORT_DATE;
 render();
