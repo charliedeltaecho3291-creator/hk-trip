@@ -147,7 +147,13 @@
   .panel h2 { font-size: 17px; margin: 0 0 8px; display: flex; align-items: baseline; gap: 8px; text-wrap: balance; }
   .panel h2 small { font-size: 12.5px; color: var(--ink-3); font-weight: 500; }
   .panel h2 .up { margin-left: auto; font-size: 13px; font-weight: 600; color: var(--jade-ink); background: none; border: 1px solid var(--line); border-radius: 999px; padding: 0 12px; min-height: 36px; cursor: pointer; }
-  .panel h2 .route-link { margin-left: auto; font-size: 13px; font-weight: 600; color: var(--jade-ink); text-decoration: none; border: 1px solid var(--line); border-radius: 999px; padding: 7px 12px; }
+  .route-link { font-size: 13px; font-weight: 600; color: var(--jade-ink); text-decoration: none; border: 1px solid var(--line); border-radius: 999px; padding: 7px 12px; }
+  .route-links { display: flex; flex-wrap: wrap; gap: 6px; margin: -2px 0 10px; }
+  .route-links .route-link { margin-left: 0; min-height: 40px; display: inline-flex; align-items: center; }
+  .panel h2 .date { font-size: 14px; font-weight: 600; color: var(--ink-2); }
+  .panel h2 .today { font-size: 12px; font-weight: 700; color: #fff; background: var(--vermilion-fill); border-radius: 999px; padding: 2px 9px; }
+  .start-row { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; color: var(--ink-2); margin: 0 0 14px; }
+  .start-row input { font: inherit; font-size: 16px; min-height: 42px; padding: 6px 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); }
   .area-head { font-size: 14px; font-weight: 700; margin: 18px 0 6px; display: flex; align-items: center; gap: 8px; color: var(--ink-2); }
   .area-head::before { content: ""; width: 12px; height: 12px; border-radius: 50%; border: 3px solid var(--jade-ink); }
   .area-head small { font-weight: 500; color: var(--ink-3); }
@@ -274,6 +280,7 @@
 <!-- 日別プラン -->
 <div class="page" id="page-plan" role="tabpanel" aria-labelledby="tab-plan">
   <p class="hint">スポットを開いて「日程」のボタンを押すと、ここに日ごとにまとまります。各日はエリアの順（路線図の順）に並びます。</p>
+  <label class="start-row">出発日（Day 1）<input type="date" id="startDate"></label>
   <div id="planBody"></div>
 </div>
 
@@ -332,7 +339,13 @@ let store = {};
 try { store = JSON.parse(localStorage.getItem(STORE_KEY) || "{}"); } catch (e) { store = {}; }
 if (!isStore(store)) store = {};
 function isStore(v) { return v && typeof v === "object" && !Array.isArray(v) && Object.values(v).every(x => x && typeof x === "object" && !Array.isArray(x)); }
-const save = () => localStorage.setItem(STORE_KEY, JSON.stringify(store));
+let saveWarned = false;
+const save = () => {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(store)); saveWarned = false; }
+  catch (e) {
+    if (!saveWarned) { saveWarned = true; alert("この端末に保存できませんでした（プライベートブラウズ中か、保存領域がいっぱいの可能性があります）。今の内容は、このページを閉じると消えます。下の「保存内容をコピー」で控えを取ってください。"); }
+  }
+};
 const st = id => (store[id] ||= {});
 const BY_ID = Object.fromEntries(SPOTS.map(s => [s.id, s]));
 const spot = s => ({ ...s, ...(store[s.id] || {}) });
@@ -350,8 +363,10 @@ const byRoute = (a, b) => (AREAS.indexOf(a.area) - AREAS.indexOf(b.area)) || byP
 const say = msg => { const el = document.getElementById("announce"); el.textContent = ""; setTimeout(() => el.textContent = msg, 30); };
 const isFixed = s => { const o = store[s.id] || {}, b = BY_ID[s.id]; return ("category" in o && o.category !== b.category) || ("area" in o && o.area !== b.area); };
 
-const mapFrame = t => `<iframe class="map-frame" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="${esc(t)}の地図" src="https://maps.google.com/maps?q=${encodeURIComponent(t + " Hong Kong")}&hl=ja&z=16&output=embed"></iframe>`;
-const placeQ = t => t.replace(/\s*[\(\[].*?[\)\]]/g, "") + " Hong Kong";
+// 店名だけだとチェーン店で別の支店に行くことがあるので、支店名（括弧内）は残し、エリアの英語名を足して探す
+const AREA_EN = { "中環・上環":"Central", "湾仔・銅鑼湾":"Wan Chai", "尖沙咀":"Tsim Sha Tsui", "佐敦・油麻地":"Jordan", "旺角・太子":"Mong Kok", "深水埗":"Sham Shui Po" };
+const placeQ = s => [s.title.replace(/[\[\]]/g, " ").replace(/\s+/g, " ").trim(), AREA_EN[s.area], "Hong Kong"].filter(Boolean).join(" ");
+const mapFrame = s => `<iframe class="map-frame" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="${esc(s.title)}の地図" src="https://maps.google.com/maps?q=${encodeURIComponent(placeQ(s))}&hl=ja&z=16&output=embed"></iframe>`;
 
 function memoHTML(s) { return s.memo ? `<span class="memo">メモ：${esc(s.memo)}</span>` : ""; }
 
@@ -368,13 +383,14 @@ function cardHTML(s) {
           <span class="meta">
             <span class="cat">${esc(s.category)}</span>
             <span>${esc(s.area === "未確認" ? "エリア未確認" : s.area)}</span>
-            ${s.day ? `<span class="day">${esc(s.day)}</span>` : ""}
+            ${s.day ? `<span class="day">${esc(s.day)}${dayDate(s.day) ? ` ${dayDate(s.day)}` : ""}</span>` : ""}
+            ${s.visited ? `<span class="vh">行った</span>` : ""}${s.star ? `<span class="vh">★付き</span>` : ""}
             ${memoHTML(s)}
           </span>
           </span>
         </span>
       </button>
-      <button class="icon-btn star" data-act="star" aria-pressed="${!!s.star}" aria-label="行きたい">${ICON_STAR}<small aria-hidden="true">行きたい</small></button>
+      <button class="icon-btn star" data-act="star" aria-pressed="${!!s.star}" aria-label="★">${ICON_STAR}</button>
       <button class="icon-btn went" data-act="visited" aria-pressed="${!!s.visited}" aria-label="行った">${ICON_WENT}<small aria-hidden="true">行った</small></button>
     </div>
     ${open ? `<div class="card-detail">
@@ -382,9 +398,9 @@ function cardHTML(s) {
       <a class="btn primary" href="${esc(s.url)}" target="_blank" rel="noopener">Googleマップで開く</a>
       <div class="sub-actions">
         <button class="btn ghost" data-act="map" aria-expanded="${map}">${map ? "地図を閉じる" : "ここで地図を見る"}</button>
-        <a class="btn ghost" href="https://www.google.com/search?tbm=isch&q=${encodeURIComponent(placeQ(s.title))}" target="_blank" rel="noopener">店の写真を見る</a>
+        <a class="btn ghost" href="https://www.google.com/search?tbm=isch&q=${encodeURIComponent(placeQ(s))}" target="_blank" rel="noopener">店の写真を見る</a>
       </div>
-      ${map ? mapFrame(s.title) : ""}
+      ${map ? mapFrame(s) : ""}
       <span class="label" id="dl-${k}">日程</span>
       <div class="seg" role="group" aria-labelledby="dl-${k}">
         ${["", ...DAYS].map(d => `<button data-act="day" data-v="${d}" aria-pressed="${(s.day || "") === d}"${d ? ` aria-label="${d}"` : ""}>${d ? d.replace("Day ", "D") : "未定"}</button>`).join("")}
@@ -471,26 +487,48 @@ function renderArea(all) {
   }).join("");
 }
 
+// ---- 日付（出発日を入れると Day 1〜5 に日付が付く） ----
+const START_KEY = "hkSpots.start";
+const WD = "日月火水木金土";
+function dayDateObj(d) {
+  const s = localStorage.getItem(START_KEY); if (!s || !d) return null;
+  const [y, m, dd] = s.split("-").map(Number); if (!y) return null;
+  return new Date(y, m - 1, dd + DAYS.indexOf(d));
+}
+function dayDate(d) { const x = dayDateObj(d); return x ? `${x.getMonth() + 1}/${x.getDate()}(${WD[x.getDay()]})` : ""; }
+function todayDay() {
+  const t = new Date(); t.setHours(0, 0, 0, 0);
+  return DAYS.find(d => dayDateObj(d)?.getTime() === t.getTime()) || null;
+}
+
 // ---- 日別プラン（各日はエリアの順） ----
-function dayRoute(list) {
-  // 出発地は現在地。Googleマップの経由地は最大9か所まで
-  const pts = list.slice(0, 10).map(s => placeQ(s.title));
-  const dest = pts.pop();
-  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(dest)}` +
-    (pts.length ? `&waypoints=${encodeURIComponent(pts.join("|"))}` : "");
+// 出発地は現在地。Googleマップは1本のルートに10か所までなので、10件ずつに分ける
+function dayRoutes(list) {
+  const out = [];
+  for (let i = 0; i < list.length; i += 10) {
+    const pts = list.slice(i, i + 10).map(placeQ), dest = pts.pop();
+    out.push({ from: i + 1, to: Math.min(i + 10, list.length),
+      href: `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(dest)}` + (pts.length ? `&waypoints=${encodeURIComponent(pts.join("|"))}` : "") });
+  }
+  return out;
 }
 function renderPlan(all) {
+  const today = todayDay();
   document.getElementById("planBody").innerHTML = [...DAYS, ""].map(d => {
     const list = all.filter(s => (s.day || "") === d).sort(byRoute);
     if (!d) {
-      const stars = list.filter(s => s.star);
-      return `<section class="panel"><h2>★付き・日程未定 <small>${stars.length}件</small></h2>${stars.length ? listHTML(stars) : `<p class="day-empty">★を付けたスポットは、全部どこかの日に入っています。</p>`}</section>`;
+      const stars = list.filter(s => s.star && !s.visited);
+      return `<section class="panel"><h2>★付き・日程未定 <small>${stars.length}件</small></h2>${stars.length ? listHTML(stars) : `<p class="day-empty">★付きのスポットは、全部どこかの日に入っています。</p>`}</section>`;
     }
-    const v = list.filter(s => s.visited).length;
-    return `<section class="panel"><h2>${esc(d)} <small>${list.length}件${v ? `・行った ${v}` : ""}</small>
-      ${list.length ? `<a class="route-link" href="${dayRoute(list)}" target="_blank" rel="noopener">この日をGoogleマップで</a>` : ""}</h2>
+    const v = list.filter(s => s.visited).length, routes = dayRoutes(list);
+    return `<section class="panel" id="day-${DAYS.indexOf(d) + 1}" style="scroll-margin-top:12px"><h2>${esc(d)}
+      ${dayDate(d) ? `<span class="date">${dayDate(d)}</span>` : ""}${d === today ? `<span class="today">今日</span>` : ""}
+      <small>${list.length}件${v ? `・行った ${v}` : ""}</small></h2>
+      ${routes.length ? `<div class="route-links">${routes.map(r => `<a class="route-link" href="${r.href}" target="_blank" rel="noopener">${routes.length > 1 ? `${r.from}〜${r.to}件目を` : "この日を"}Googleマップで</a>`).join("")}</div>` : ""}
       ${list.length ? listHTML(list) : `<p class="day-empty">まだ予定なし</p>`}</section>`;
   }).join("");
+  const sd = document.getElementById("startDate");
+  if (sd && document.activeElement !== sd) sd.value = localStorage.getItem(START_KEY) || "";
 }
 
 function renderTally(all) {
@@ -503,6 +541,7 @@ function renderTally(all) {
 const RENDER = { list: renderList, area: renderArea, plan: renderPlan };
 const BODY = { list: ["listBody"], area: ["route", "areaBody"], plan: ["planBody"] };
 function render() {
+  flushMemo();
   const all = allSpots();
   renderTally(all);
   Object.keys(BODY).forEach(p => { if (p !== current) BODY[p].forEach(id => document.getElementById(id).innerHTML = ""); });
@@ -523,9 +562,15 @@ function patchCard(id) {
   renderTally(allSpots());
   stampIds.clear();
 }
-function rerenderCard(id) {
-  const s = spot(BY_ID[id]);
-  document.querySelectorAll(`.card[data-id="${CSS.escape(id)}"]`).forEach(c => { c.outerHTML = cardHTML(s); });
+// 作り直したあと、押していたボタンに読み上げ位置（フォーカス）を戻す
+function rerenderCard(id, pressed) {
+  flushMemo();
+  const s = spot(BY_ID[id]), sel = `.card[data-id="${CSS.escape(id)}"]`;
+  // iPhoneのSafariは押したボタンにフォーカスを移さないので、押された要素を直接受け取る
+  const f = pressed || (document.activeElement?.closest(sel) ? document.activeElement : null);
+  const act = f?.dataset.act, v = f?.dataset.v;
+  document.querySelectorAll(sel).forEach(c => { c.outerHTML = cardHTML(s); });
+  if (act) document.querySelector(`${sel} [data-act="${act}"]${v !== undefined ? `[data-v="${v}"]` : ""}`)?.focus();
 }
 
 // ---- events (delegated) ----
@@ -540,6 +585,7 @@ document.addEventListener("click", e => {
   const card = t.closest(".card");
   const actEl = t.closest("[data-act]");
   if (!card || !actEl) return;
+  flushMemo();
   const id = card.dataset.id, act = actEl.dataset.act, s = spot(BY_ID[id]);
   if (act === "star") { st(id).star = !s.star; save(); patchCard(id); say(s.star ? `${s.title} の★を外しました` : `${s.title} に★を付けました`); }
   else if (act === "visited") {
@@ -548,30 +594,40 @@ document.addEventListener("click", e => {
   }
   else if (act === "toggle") {
     openIds.has(id) ? (openIds.delete(id), mapIds.delete(id)) : openIds.add(id);
-    rerenderCard(id);
+    rerenderCard(id, actEl);
   }
-  else if (act === "map") { mapIds.has(id) ? mapIds.delete(id) : mapIds.add(id); rerenderCard(id); }
+  else if (act === "map") { mapIds.has(id) ? mapIds.delete(id) : mapIds.add(id); rerenderCard(id, actEl); }
   else if (act === "day") {
     st(id).day = actEl.dataset.v; save();
-    if (current === "plan") render(); else { rerenderCard(id); renderTally(allSpots()); }
+    if (current === "plan") render(); else { rerenderCard(id, actEl); renderTally(allSpots()); }
     say(actEl.dataset.v ? `${s.title} を ${actEl.dataset.v} に入れました` : `${s.title} の日程を未定にしました`);
   }
   else if (act === "unfix") { delete st(id).category; delete st(id).area; save(); render(); }
 });
 
-// メモは打つたびに保存（アプリを閉じても消えない）。カードは作り直さず、表示の1行だけ書き換える
-let memoTimer;
-document.addEventListener("input", e => {
-  if (e.target.dataset.field !== "memo") return;
-  const card = e.target.closest(".card"), id = card.dataset.id, v = e.target.value;
-  clearTimeout(memoTimer);
-  memoTimer = setTimeout(() => {
-    st(id).memo = v; save();
-    const meta = card.querySelector(".meta");
+// メモは打つたびに保存（店ごとに0.3秒まとめる）。ほかの操作の直前・入力欄を離れたとき・アプリが裏に回ったときは即保存。
+// カードは作り直さず、表示の1行だけ書き換える
+const memoPending = new Map();  // id -> { v, timer }
+function writeMemo(id, v) {
+  st(id).memo = v; save();
+  document.querySelectorAll(`.card[data-id="${CSS.escape(id)}"] .meta`).forEach(meta => {
     meta.querySelector(".memo")?.remove();
     if (v) meta.insertAdjacentHTML("beforeend", memoHTML(spot(BY_ID[id])));
-  }, 300);
+  });
+}
+function flushMemo() {
+  memoPending.forEach(({ v, timer }, id) => { clearTimeout(timer); writeMemo(id, v); });
+  memoPending.clear();
+}
+document.addEventListener("input", e => {
+  if (e.target.dataset.field !== "memo") return;
+  const id = e.target.closest(".card").dataset.id, v = e.target.value;
+  clearTimeout(memoPending.get(id)?.timer);
+  memoPending.set(id, { v, timer: setTimeout(() => { memoPending.delete(id); writeMemo(id, v); }, 300) });
 });
+document.addEventListener("focusout", e => { if (e.target.dataset?.field === "memo") flushMemo(); });
+addEventListener("pagehide", flushMemo);
+document.addEventListener("visibilitychange", () => { if (document.hidden) flushMemo(); });
 document.addEventListener("change", e => {
   const f = e.target.dataset.field, card = e.target.closest(".card");
   if (!card || (f !== "category" && f !== "area")) return;
@@ -619,9 +675,23 @@ document.getElementById("importBtn").onclick = () => {
   let v;
   try { v = JSON.parse(text); } catch (e) { v = null; }
   if (!isStore(v)) { alert("読み込めませんでした。「保存内容をコピー」でコピーした文字列を、そのまま全部貼り付けてください。今の内容はそのままです。"); return; }
-  const known = Object.keys(v).filter(id => BY_ID[id]).length;
-  if (!confirm(`${known}件分の記録が見つかりました。今の内容を置き換えますか？`)) return;
-  store = v; save(); render(); alert("戻しました。");
+  // このアプリの店で、正しい値の項目だけを取り込む（おかしなエリア名などで店が一覧から消えないように）
+  const clean = {};
+  Object.entries(v).forEach(([id, o]) => {
+    if (!BY_ID[id]) return;
+    const c = {};
+    if (typeof o.star === "boolean") c.star = o.star;
+    if (typeof o.visited === "boolean") c.visited = o.visited;
+    if (o.day === "" || DAYS.includes(o.day)) c.day = o.day;
+    if (typeof o.memo === "string") c.memo = o.memo.slice(0, 500);
+    if (CATEGORIES.includes(o.category)) c.category = o.category;
+    if (AREAS.includes(o.area)) c.area = o.area;
+    if (Object.keys(c).length) clean[id] = c;
+  });
+  const n = Object.keys(clean).length;
+  if (!n) { alert("このアプリの店の記録が1件も見つかりませんでした。今の内容はそのままです。"); return; }
+  if (!confirm(`${n}件分の記録が見つかりました。今の内容を置き換えますか？`)) return;
+  store = clean; save(); render(); alert("戻しました。");
 };
 document.getElementById("resetBtn").onclick = () => {
   if (confirm("★・行った・日程・メモ・修正内容をすべて消します。先に「保存内容をコピー」で控えを取ることもできます。消しますか？")) { store = {}; save(); render(); }
@@ -665,9 +735,15 @@ themeBtn.addEventListener("click", () => {
 
 document.getElementById("noteCount").textContent = SPOTS.length;
 document.getElementById("noteDate").textContent = EXPORT_DATE;
+document.getElementById("startDate").addEventListener("change", e => {
+  if (e.target.value) localStorage.setItem(START_KEY, e.target.value); else localStorage.removeItem(START_KEY);
+  render();
+});
 render();
-// URL の #area / #plan で最初に開くタブを選べる
-if (["area", "plan"].includes(location.hash.slice(1))) showTab(location.hash.slice(1));
+// URL の #area / #plan で最初に開くタブを選べる。指定がなく、今日が旅行中なら、日別プランの今日を開く
+const startHash = location.hash.slice(1), today = todayDay();
+if (["area", "plan"].includes(startHash)) showTab(startHash);
+else if (today) { showTab("plan"); document.getElementById(`day-${DAYS.indexOf(today) + 1}`)?.scrollIntoView({ block: "start" }); }
 </script>
 </body>
 </html>
